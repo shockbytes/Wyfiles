@@ -12,10 +12,11 @@ import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -26,10 +27,13 @@ import mc.fhooe.at.wyfiles.R;
 import mc.fhooe.at.wyfiles.fragments.ConnectionFragment;
 
 public class ConnectionActivity extends AppCompatActivity
-        implements NfcAdapter.CreateNdefMessageCallback {
+        implements NfcAdapter.CreateNdefMessageCallback, NfcAdapter.OnNdefPushCompleteCallback {
 
     private static final int PERM_REQ_CODE = 0x3431;
     private static final int REQ_CODE_BT = 0x1235;
+
+    @Inject
+    protected Vibrator vibrator;
 
     @Inject
     protected NfcAdapter nfcAdapter;
@@ -103,7 +107,7 @@ public class ConnectionActivity extends AppCompatActivity
 
         String payload = processNfcIntent(getIntent());
         if (payload != null) {
-            Snackbar.make(findViewById(android.R.id.content), payload, Snackbar.LENGTH_INDEFINITE).show();
+            openMainActivity(payload, false);
         }
     }
 
@@ -125,6 +129,16 @@ public class ConnectionActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    public void onNdefPushComplete(NfcEvent nfcEvent) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                openMainActivity(null, true);
+            }
+        });
+    }
+
     private void setupNfc() {
 
         if (nfcAdapter == null) {
@@ -140,6 +154,7 @@ public class ConnectionActivity extends AppCompatActivity
         }
 
         nfcAdapter.setNdefPushMessageCallback(this, this);
+        nfcAdapter.setOnNdefPushCompleteCallback(this, this);
 
         nfcPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -185,4 +200,9 @@ public class ConnectionActivity extends AppCompatActivity
         supportFinishAfterTransition();
     }
 
+    private void openMainActivity(String payload, boolean isServer) {
+        startActivity(MainActivity.newIntent(this, payload, isServer),
+                ActivityOptionsCompat.makeSceneTransitionAnimation(this).toBundle());
+        supportFinishAfterTransition();
+    }
 }

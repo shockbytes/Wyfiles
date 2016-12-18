@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.nfc.NfcAdapter;
+import android.os.Vibrator;
 
 import com.github.ivbaranov.rxbluetooth.RxBluetooth;
 
@@ -24,7 +25,7 @@ import mc.fhooe.at.wyfiles.communication.WyfilesManager;
 @Module
 public class AppModule {
 
-    Application application;
+    private Application application;
 
     public AppModule(Application app) {
         application = app;
@@ -73,6 +74,12 @@ public class AppModule {
                                                 WifiP2pManager wifiP2pManager,
                                                 NfcAdapter nfcAdapter) {
         return new WyfilesManager(bluetoothAdapteradapter, bluetooth, uuid, nfcAdapter, wifiP2pManager);
+    }
+
+    @Provides
+    @Singleton
+    public Vibrator provideVibrator() {
+        return (Vibrator) application.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
 

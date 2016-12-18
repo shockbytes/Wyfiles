@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wyfiles</string>
+    <string name="game_chess">Schach</string>
+    <string name="game_ships">Schiffe versenken</string>
+    <string name="game_ships_enemy_ships">Gegnerische Schiffe: %d</string>
+    <string name="game_ships_own_ships">Eigene Schiffe: %d</string>
+    <string name="tab_files">Dateien</string>
+    <string name="tab_games">Spiele</string>
+    <string name="title_main">Verbunden mit %s</string>
+    <string name="game_chess_description">Spiel ein wenig Low-Graphic Schach gegen deinen Partner</string>
+    <string name="game_ships_description">Versenke gegnerische Schiffe und gewinne die Schlacht</string>
+    <string name="toast_battleship_already_selected">Feld wurde bereits geklickt, wähle ein anderes!</string>
+    <string name="toast_battleship_exit">Gegner hat das Spiel verlassen</string>
+    <string name="toast_battleship_not_your_turn">Warte bis dein Zug kommt!</string>
+    <string name="toast_battleship_rematch">Du hast gewonnen! Willst du eine Revanche?</string>
+</resources>

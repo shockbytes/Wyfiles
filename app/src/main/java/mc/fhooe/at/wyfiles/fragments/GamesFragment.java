@@ -4,6 +4,7 @@ package mc.fhooe.at.wyfiles.fragments;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,14 +12,18 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import mc.fhooe.at.wyfiles.R;
 import mc.fhooe.at.wyfiles.adapter.GamesAdapter;
+import mc.fhooe.at.wyfiles.communication.WyfilesManager;
+import mc.fhooe.at.wyfiles.core.GameActivity;
+import mc.fhooe.at.wyfiles.core.WyApp;
 import mc.fhooe.at.wyfiles.util.Game;
 import mc.fhooe.at.wyfiles.util.ResourceManager;
 
@@ -34,6 +39,9 @@ public class GamesFragment extends Fragment implements GamesAdapter.OnItemClickL
     @Bind(R.id.fragment_games_recyclerview)
     protected RecyclerView recyclerView;
 
+    @Inject
+    WyfilesManager wyfilesManager;
+
     private GamesAdapter gamesAdapter;
 
     public GamesFragment() {
@@ -43,6 +51,7 @@ public class GamesFragment extends Fragment implements GamesAdapter.OnItemClickL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((WyApp) getActivity().getApplication()).getAppComponent().inject(this);
     }
 
     @Override
@@ -85,7 +94,9 @@ public class GamesFragment extends Fragment implements GamesAdapter.OnItemClickL
 
     @Override
     public void onItemClick(Game g, View v) {
+        wyfilesManager.sendBluetoothGameRequest(g.getGameId());
 
-        Toast.makeText(getContext(), "Start " + g.getName(), Toast.LENGTH_SHORT).show();
+        startActivity(GameActivity.newIntent(getContext(), g, true),
+                ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity()).toBundle());
     }
 }

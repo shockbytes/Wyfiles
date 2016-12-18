@@ -1,5 +1,6 @@
 package mc.fhooe.at.wyfiles.util;
 
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
 /**
@@ -14,15 +15,20 @@ public class Game {
 
     private int gameId;
     private int iconId;
+    private int primaryColor;
+    private int primaryColorDark;
     private String name;
     private String description;
 
     public Game(String name, String description,
-                int gameId, @DrawableRes int iconId) {
+                int gameId, @DrawableRes int iconId,
+                @ColorRes int primaryColor, @ColorRes int primaryColorDark) {
         this.iconId = iconId;
         this.name = name;
         this.gameId = gameId;
         this.description = description;
+        this.primaryColor = primaryColor;
+        this.primaryColorDark = primaryColorDark;
     }
 
     public String getName() {
@@ -39,6 +45,14 @@ public class Game {
 
     public int getGameId() {
         return gameId;
+    }
+
+    public int getPrimaryColor() {
+        return primaryColor;
+    }
+
+    public int getPrimaryColorDark() {
+        return primaryColorDark;
     }
 
 }

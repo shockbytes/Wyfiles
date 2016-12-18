@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context="mc.fhooe.at.wyfiles.fragments.BattleshipsFragment">
+
+    <TextView
+        android:id="@+id/fragment_battleships_txt_enemycount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Enemy ships: 10"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_battleships_rv_enemy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_battleships_view_divider"
+        android:layout_below="@+id/fragment_battleships_txt_enemycount"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="2dp" />
+
+    <View
+        android:id="@+id/fragment_battleships_view_divider"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_centerVertical="true"
+        android:layout_margin="8dp"
+        android:background="@color/colorAccent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_battleships_rv_own"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_battleships_view_divider"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="2dp" />
+
+    <TextView
+        android:id="@+id/fragment_battleships_txt_owncount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="Own ships: 10"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

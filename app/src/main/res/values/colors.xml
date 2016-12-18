@@ -7,4 +7,9 @@
     <color name="colorPrimaryGames">#4CAF50</color>
     <color name="colorPrimaryDarkGames">#388E3C</color>
     <color name="mainBackground">#eee</color>
+
+    <color name="colorPrimaryGameBattleships">#673AB7</color>
+    <color name="colorPrimaryDarkGameBattleships">#512DA8</color>
+    <color name="colorPrimaryGameChess">#009688</color>
+    <color name="colorPrimaryDarkGameChess">#00796B</color>
 </resources>

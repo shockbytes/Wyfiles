@@ -9,12 +9,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -24,14 +28,22 @@ import mc.fhooe.at.wyfiles.R;
 import mc.fhooe.at.wyfiles.communication.WyfilesManager;
 import mc.fhooe.at.wyfiles.fragments.FilesFragment;
 import mc.fhooe.at.wyfiles.fragments.GamesFragment;
+import mc.fhooe.at.wyfiles.util.Game;
+import mc.fhooe.at.wyfiles.util.ResourceManager;
+import rx.Subscriber;
 
-public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
+public class MainActivity extends AppCompatActivity
+        implements TabLayout.OnTabSelectedListener, WyfilesManager.WyfilesCallback {
 
-    public static Intent newIntent(Context context) {
-        return new Intent(context, MainActivity.class);
+    public static Intent newIntent(Context context, String payload, boolean isServer) {
+        return new Intent(context, MainActivity.class)
+                .putExtra(ARG_PAYLOAD, payload)
+                .putExtra(ARG_IS_SERVER, isServer);
     }
 
+    private static final String ARG_PAYLOAD = "arg_payload";
     private static final String ARG_PRIMARY = "arg_primary";
+    private static final String ARG_IS_SERVER = "arg_is_server";
     private static final String ARG_PRIMARY_DARK = "arg_primary_dark";
     private static final String ARG_TAB_POSITION = "arg_tab_position";
 
@@ -47,9 +59,41 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Inject
     protected WyfilesManager wyfilesManager;
 
+    @Inject
+    protected Vibrator vibrator;
+
     private int primaryOld;
     private int primaryDarkOld;
     private int initialTabPosition;
+
+    private Subscriber<String> bluetoothReadSubscriber = new Subscriber<String>() {
+
+        @Override
+        public void onCompleted() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.wtf("Wyfiles", "ReadSubscriber: " + e.getMessage());
+            Toast.makeText(getApplicationContext(), "MainSubscriber: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onNext(String s) {
+
+            if (s.equals("exit")) {
+                Toast.makeText(getApplicationContext(), "Connection terminated from the other side", Toast.LENGTH_LONG).show();
+                //supportFinishAfterTransition();
+            } else if (s.startsWith("game")) {
+                int gameId = Integer.parseInt(s.split(":")[1]);
+                Game g = ResourceManager.getGameById(MainActivity.this, gameId);
+                if (g != null) {
+                    startActivity(GameActivity.newIntent(MainActivity.this, g, false),
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this).toBundle());
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +111,23 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             initialTabPosition = 0;
         }
 
+        String payload = getIntent().getStringExtra(ARG_PAYLOAD);
+        if (payload != null) {
+            getDataFromPayload(payload);
+        }
+
+        boolean isServer = getIntent().getBooleanExtra(ARG_IS_SERVER, false);
+        if (isServer) {
+            wyfilesManager.startBluetoothServer(this);
+        }
+
         initialize();
     }
 
     @Override
     protected void onDestroy() {
         ButterKnife.unbind(this);
+        bluetoothReadSubscriber.unsubscribe();
         wyfilesManager.destroy();
         super.onDestroy();
     }
@@ -154,6 +209,13 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         }
     }
 
+    private void getDataFromPayload(String payload) {
+
+        String[] loads = payload.split(";");
+        String bluetoothClientDevice = loads[1].split(":")[1];
+
+        wyfilesManager.connectWithBluetoothDevice(bluetoothClientDevice, this);
+    }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
@@ -188,4 +250,23 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     public void onTabReselected(TabLayout.Tab tab) {
 
     }
+
+    @Override
+    public void onBluetoothError(Throwable t) {
+
+        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+        Log.wtf("Wyfiles", t.getMessage());
+    }
+
+    @Override
+    public void onBluetoothConnected(String remoteDeviceName) {
+
+        setTitle(getString(R.string.title_main, remoteDeviceName));
+        vibrator.vibrate(200);
+        // Add read subscriber
+        wyfilesManager.requestBluetoothReadConnection().subscribe(bluetoothReadSubscriber);
+        // Write hello message
+        wyfilesManager.sendBluetoothHelloMessage();
+    }
+
 }

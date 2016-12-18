@@ -1,13 +1,21 @@
 <resources>
     <string name="app_name">Wyfiles</string>
-    <string name="app_version">Version 0.2</string>
+    <string name="app_version" translatable="false">Version 0.5.2</string>
 
     <string name="tab_files">Files</string>
     <string name="tab_games">Games</string>
+
+    <string name="title_main">Connected to %s</string>
 
     <string name="game_ships">Battleships</string>
     <string name="game_ships_description">Plunge the enemy battleships and win the battle</string>
     <string name="game_chess_description">Play some low graphic chess against your partner</string>
     <string name="game_chess">Chess</string>
+    <string name="game_ships_enemy_ships">Enemy ships: %d</string>
+    <string name="game_ships_own_ships">Own ships: %d</string>
+    <string name="toast_battleship_already_selected">Field already clicked, Select another one!</string>
+    <string name="toast_battleship_not_your_turn">It\'s not your turn!</string>
+    <string name="toast_battleship_rematch">You won! Want a rematch?</string>
+    <string name="toast_battleship_exit">Enemy left the game</string>
 
 </resources>

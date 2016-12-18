@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/battleships_item_size"
+    android:layout_height="@dimen/battleships_item_size"
+    android:layout_margin="4dp"
+    android:id="@+id/reclyceritem_battleships_img"
+    android:background="@drawable/battleshipfield_background" />

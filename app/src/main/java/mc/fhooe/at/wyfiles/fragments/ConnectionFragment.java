@@ -42,7 +42,7 @@ public class ConnectionFragment extends Fragment {
     @OnClick(R.id.fragment_connection_imgbtn_develop)
     public void onClickDeveloperAccess() {
 
-        startActivity(MainActivity.newIntent(getContext()),
+        startActivity(MainActivity.newIntent(getContext(), null, false),
                 ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity()).toBundle());
         getActivity().supportFinishAfterTransition();
     }
