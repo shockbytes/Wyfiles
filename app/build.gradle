@@ -34,9 +34,11 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.1.0'
     compile 'com.android.support:support-v4:25.1.0'
 
+    testCompile 'junit:junit:4.12'
+
     compile 'com.google.dagger:dagger:2.8'
     compile 'com.jakewharton:butterknife:7.0.1'
-    testCompile 'junit:junit:4.12'
+    compile 'com.github.ivbaranov:rxbluetooth:0.1.2'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.8'
     provided 'javax.annotation:jsr250-api:1.0'
 

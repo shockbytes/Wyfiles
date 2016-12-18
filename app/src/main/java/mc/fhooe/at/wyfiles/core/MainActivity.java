@@ -16,9 +16,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import mc.fhooe.at.wyfiles.R;
+import mc.fhooe.at.wyfiles.communication.WyfilesManager;
 import mc.fhooe.at.wyfiles.fragments.FilesFragment;
 import mc.fhooe.at.wyfiles.fragments.GamesFragment;
 
@@ -41,6 +44,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Bind(R.id.main_appbar)
     protected AppBarLayout appBar;
 
+    @Inject
+    protected WyfilesManager wyfilesManager;
+
     private int primaryOld;
     private int primaryDarkOld;
     private int initialTabPosition;
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((WyApp) getApplication()).getAppComponent().inject(this);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -66,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     protected void onDestroy() {
         ButterKnife.unbind(this);
+        wyfilesManager.destroy();
         super.onDestroy();
     }
 
@@ -144,7 +152,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             onTabSelected(initialTab);
             initialTab.select();
         }
-
     }
 
 
@@ -165,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
                 transaction.replace(R.id.main_content, GamesFragment.newInstance());
                 break;
-
         }
 
         transaction.commit();

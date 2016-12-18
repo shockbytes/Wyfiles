@@ -10,6 +10,7 @@ import android.support.annotation.DrawableRes;
 public class Game {
 
     public static final int BATTLESHIP = 1;
+    public static final int CHESS = 2;
 
     private int gameId;
     private int iconId;

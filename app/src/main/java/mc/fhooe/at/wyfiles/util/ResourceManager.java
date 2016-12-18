@@ -21,6 +21,10 @@ public class ResourceManager {
                 context.getString(R.string.game_ships_description),
                 Game.BATTLESHIP,
                 R.mipmap.ic_game_ships));
+        games.add(new Game(context.getString(R.string.game_chess),
+                context.getString(R.string.game_chess_description),
+                Game.CHESS,
+                R.mipmap.ic_game_chess));
 
         return games;
     }

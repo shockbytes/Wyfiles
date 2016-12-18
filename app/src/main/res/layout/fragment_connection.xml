@@ -2,41 +2,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:padding="16dp"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
+    android:padding="16dp"
     tools:context="mc.fhooe.at.wyfiles.fragments.ConnectionFragment">
 
     <ImageView
+        android:id="@+id/fragment_connection_imgview_icon"
         android:layout_width="192dp"
         android:layout_height="192dp"
-        app:srcCompat="@drawable/ic_indicate_connection"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="96dp"
-        android:id="@+id/fragment_connection_imgview_icon" />
+        app:srcCompat="@drawable/ic_indicate_connection" />
 
     <TextView
-        android:text="Pair your devices using NFC\nHold them tight"
+        android:id="@+id/fragment_connection_textview_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_connection_imgview_icon"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:textSize="24sp"
-        android:gravity="center"
         android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:text="Pair your devices using NFC\nHold them tight"
         android:textColor="@android:color/white"
-        android:id="@+id/fragment_connection_textview_main" />
+        android:textSize="24sp" />
 
     <ImageButton
+        android:id="@+id/fragment_connection_imgbtn_develop"
         style="?attr/borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_develop"
-        android:id="@+id/fragment_connection_imgbtn_develop"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        app:srcCompat="@drawable/ic_develop" />
+
+    <TextView
+        android:id="@+id/fragment_connection_txt_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-light"
+        android:text="@string/app_version"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
 
 </RelativeLayout>

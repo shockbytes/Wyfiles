@@ -1,12 +1,13 @@
 <resources>
     <string name="app_name">Wyfiles</string>
+    <string name="app_version">Version 0.2</string>
 
     <string name="tab_files">Files</string>
     <string name="tab_games">Games</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="game_ships">Battleships</string>
-    <string name="game_ships_description">TODO description for battleships</string>
+    <string name="game_ships_description">Plunge the enemy battleships and win the battle</string>
+    <string name="game_chess_description">Play some low graphic chess against your partner</string>
+    <string name="game_chess">Chess</string>
 
 </resources>
