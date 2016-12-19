@@ -4,5 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="battleships_item_size">32dp</dimen>
+    <dimen name="chessfield_item_size">44dp</dimen>
 
 </resources>

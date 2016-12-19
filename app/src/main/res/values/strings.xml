@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Wyfiles</string>
-    <string name="app_version" translatable="false">Version 0.5.2</string>
+    <string name="app_version" translatable="false">Version 0.6.1</string>
 
     <string name="tab_files">Files</string>
     <string name="tab_games">Games</string>
@@ -14,8 +14,17 @@
     <string name="game_ships_enemy_ships">Enemy ships: %d</string>
     <string name="game_ships_own_ships">Own ships: %d</string>
     <string name="toast_battleship_already_selected">Field already clicked, Select another one!</string>
-    <string name="toast_battleship_not_your_turn">It\'s not your turn!</string>
+    <string name="toast_game_not_your_turn">It\'s not your turn!</string>
     <string name="toast_battleship_rematch">You won! Want a rematch?</string>
     <string name="toast_battleship_exit">Enemy left the game</string>
+    <string name="toast_chess_exit">Partner quitted chess game</string>
+    <string name="chess_cannot_strike_figure">Cannot strike enemy figure</string>
+    <string name="chess_good_strike">Good strike!</string>
+    <string name="chess_checkmate">CHECKMATE!</string>
+    <string name="chess_cannot_move_figure">Cannot move figure</string>
+    <string name="chess_your_turn">It\'s your turn</string>
+    <string name="chess_partner_turn">Partner turn!</string>
+    <string name="chess_enemy_strike">Oh no!!!</string>
+    <string name="toast_chess_rematch">Du hast verloren, willst du eine Revanche?</string>
 
 </resources>

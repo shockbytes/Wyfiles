@@ -14,6 +14,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import mc.fhooe.at.wyfiles.R;
 import mc.fhooe.at.wyfiles.fragments.BattleshipsFragment;
+import mc.fhooe.at.wyfiles.fragments.ChessFragment;
 import mc.fhooe.at.wyfiles.util.Game;
 
 public class GameActivity extends AppCompatActivity {
@@ -108,6 +109,7 @@ public class GameActivity extends AppCompatActivity {
 
             case Game.CHESS:
 
+                transaction.replace(R.id.game_main_content, ChessFragment.newInstance(isHost));
                 break;
         }
         transaction.commit();

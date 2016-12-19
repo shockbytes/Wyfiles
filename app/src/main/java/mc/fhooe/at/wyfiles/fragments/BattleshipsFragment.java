@@ -23,8 +23,8 @@ import mc.fhooe.at.wyfiles.R;
 import mc.fhooe.at.wyfiles.adapter.BattleshipsAdapter;
 import mc.fhooe.at.wyfiles.communication.WyfilesManager;
 import mc.fhooe.at.wyfiles.core.WyApp;
-import mc.fhooe.at.wyfiles.games.BattleshipField;
-import mc.fhooe.at.wyfiles.games.BattleshipsGame;
+import mc.fhooe.at.wyfiles.games.battleships.BattleshipField;
+import mc.fhooe.at.wyfiles.games.battleships.BattleshipsGame;
 import rx.Subscriber;
 
 /**
@@ -216,7 +216,7 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
             return;
         }
         if (!game.isTurnAllowed()) {
-            Toast.makeText(getContext(), R.string.toast_battleship_not_your_turn, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), R.string.toast_game_not_your_turn, Toast.LENGTH_LONG).show();
             return;
         }
 

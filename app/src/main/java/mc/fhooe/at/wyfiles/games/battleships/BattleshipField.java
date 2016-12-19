@@ -1,4 +1,4 @@
-package mc.fhooe.at.wyfiles.games;
+package mc.fhooe.at.wyfiles.games.battleships;
 
 import mc.fhooe.at.wyfiles.R;
 

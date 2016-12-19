@@ -3,9 +3,11 @@ package mc.fhooe.at.wyfiles.dagger;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.nfc.NfcAdapter;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 
 import com.github.ivbaranov.rxbluetooth.RxBluetooth;
 
@@ -80,6 +82,12 @@ public class AppModule {
     @Singleton
     public Vibrator provideVibrator() {
         return (Vibrator) application.getSystemService(Context.VIBRATOR_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    public SharedPreferences provideSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(application);
     }
 
 

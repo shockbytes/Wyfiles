@@ -12,4 +12,8 @@
     <color name="colorPrimaryDarkGameBattleships">#512DA8</color>
     <color name="colorPrimaryGameChess">#009688</color>
     <color name="colorPrimaryDarkGameChess">#00796B</color>
+
+    <color name="chess_field_dark">#D18B47</color>
+    <color name="chess_field_light">#FFCE9E</color>
+
 </resources>

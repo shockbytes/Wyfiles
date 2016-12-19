@@ -6,6 +6,7 @@ import dagger.Component;
 import mc.fhooe.at.wyfiles.core.ConnectionActivity;
 import mc.fhooe.at.wyfiles.core.MainActivity;
 import mc.fhooe.at.wyfiles.fragments.BattleshipsFragment;
+import mc.fhooe.at.wyfiles.fragments.ChessFragment;
 import mc.fhooe.at.wyfiles.fragments.ConnectionFragment;
 import mc.fhooe.at.wyfiles.fragments.FilesFragment;
 import mc.fhooe.at.wyfiles.fragments.GamesFragment;
@@ -30,5 +31,7 @@ public interface AppComponent {
     void inject(GamesFragment fragment);
 
     void inject(BattleshipsFragment fragment);
+
+    void inject(ChessFragment fragment);
 
 }

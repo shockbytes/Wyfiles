@@ -1,6 +1,7 @@
 package mc.fhooe.at.wyfiles.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,25 +14,26 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import mc.fhooe.at.wyfiles.R;
-import mc.fhooe.at.wyfiles.games.battleships.BattleshipField;
+import mc.fhooe.at.wyfiles.games.chess.ChessField;
+import mc.fhooe.at.wyfiles.games.chess.ChessFigure;
 
 /**
  * @author Martin Macheiner
  *         Date: 06.01.2016.
  */
-public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.ViewHolder> {
+public class ChessAdapter extends RecyclerView.Adapter<ChessAdapter.ViewHolder> {
 
     public interface OnItemClickListener {
 
-        void onItemClick(BattleshipField f, View v, int pos);
+        void onItemClick(ChessField f, View v, int pos);
     }
 
     public interface OnItemLongClickListener {
 
-        void onItemLongClick(BattleshipField f, View v);
+        void onItemLongClick(ChessField f, View v);
     }
 
-    private ArrayList<BattleshipField> data;
+    private ArrayList<ChessField> data;
     private Context context;
     private final LayoutInflater inflater;
 
@@ -40,7 +42,7 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
 
     //----------------------------------------------------------------------
 
-    public BattleshipsAdapter(Context context, List<BattleshipField> data) {
+    public ChessAdapter(Context context, List<ChessField> data) {
 
         inflater = LayoutInflater.from(context);
         this.context = context;
@@ -51,7 +53,7 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(inflater.inflate(R.layout.recycleritem_battleships, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.recycleritem_chessfield, parent, false));
     }
 
     @Override
@@ -73,20 +75,20 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
     }
 
     //-----------------------------Data Section-----------------------------
-    public void addEntity(int i, BattleshipField entity) {
+    public void addEntity(int i, ChessField entity) {
         data.add(i, entity);
         notifyItemInserted(i);
     }
 
-    public void addEntityAtLast(BattleshipField entity) {
+    public void addEntityAtLast(ChessField entity) {
         addEntity(data.size(), entity);
     }
 
-    public void addEntityAtFirst(BattleshipField entity) {
+    public void addEntityAtFirst(ChessField entity) {
         addEntity(0, entity);
     }
 
-    public BattleshipField getItemAtPosition(int field) {
+    public ChessField getItemAtPosition(int field) {
 
         if (field < 0 || field > data.size()) {
             throw new IndexOutOfBoundsException("Field " + field +" cannot be > " + data.size());
@@ -94,11 +96,7 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
         return data.get(field);
     }
 
-    public boolean isFieldAShip(int field) {
-        return data.get(field).getState() == BattleshipField.FieldState.SHIP;
-    }
-
-    public void deleteEntity(BattleshipField book) {
+    public void deleteEntity(ChessField book) {
         int location = getLocation(data, book);
         if (location > -1) {
             deleteEntity(location);
@@ -111,12 +109,12 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
     }
 
     public void moveEntity(int i, int dest) {
-        BattleshipField temp = data.remove(i);
+        ChessField temp = data.remove(i);
         data.add(dest, temp);
         notifyItemMoved(i, dest);
     }
 
-    public void setData(List<BattleshipField> data) {
+    public void setData(List<ChessField> data) {
 
         if (data == null) {
             return;
@@ -132,7 +130,7 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
 
         //Add and move items
         for (int i = 0; i < data.size(); ++i) {
-            BattleshipField entity = data.get(i);
+            ChessField entity = data.get(i);
             int location = getLocation(this.data, entity);
             if (location < 0) {
                 addEntity(i, entity);
@@ -142,10 +140,10 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
         }
     }
 
-    private int getLocation(List<BattleshipField> data, BattleshipField searching) {
+    private int getLocation(List<ChessField> data, ChessField searching) {
 
         for (int j = 0; j < data.size(); ++j) {
-            BattleshipField newEntity = data.get(j);
+            ChessField newEntity = data.get(j);
             if (searching.equals(newEntity)) {
                 return j;
             }
@@ -157,11 +155,11 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
     //----------------------------------------------------------------------
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private BattleshipField field;
+        private ChessField field;
 
         private int position;
 
-        @Bind(R.id.reclyceritem_battleships_img)
+        @Bind(R.id.reclyceritem_chessfield_img)
         protected ImageView imgView;
 
         public ViewHolder(final View itemView) {
@@ -187,16 +185,51 @@ public class BattleshipsAdapter extends RecyclerView.Adapter<BattleshipsAdapter.
             });
         }
 
-        public void bind(BattleshipField field, int position) {
+        public void bind(ChessField field, int position) {
 
             this.field = field;
             this.position = position;
-            imgView.setImageResource(field.getIcon());
 
-            int bgDrawable = field.isClicked()
-                    ? R.drawable.battleshipfield_background_clicked
-                    : R.drawable.battleshipfield_background;
-            imgView.setBackgroundResource(bgDrawable);
+            int bg = calculateBackground();
+            imgView.setBackgroundResource(bg);
+
+            if (field.getFigure() != null) {
+                imgView.setImageResource(field.getFigure().getIcon());
+                if (field.getFigure().getColor() == ChessFigure.Color.BLACK) {
+                    imgView.setColorFilter(Color.parseColor("#424242"));
+                }
+            } else {
+                imgView.setImageResource(0);
+                imgView.clearColorFilter();
+            }
+        }
+
+        private int calculateBackground() {
+
+            int row = (int) Math.ceil(position/8);
+            int col = position%8;
+
+            if (row%2 == 0) {
+                if (field.isHighlighted()) {
+                    return (col%2 == 0)
+                            ? R.drawable.chess_field_bg_light_selected
+                            : R.drawable.chess_field_bg_dark_selected;
+                } else {
+                    return (col%2 == 0)
+                            ? R.color.chess_field_light
+                            : R.color.chess_field_dark;
+                }
+            } else {
+                if (field.isHighlighted()) {
+                    return (col%2 == 0)
+                            ? R.drawable.chess_field_bg_dark_selected
+                            : R.drawable.chess_field_bg_light_selected;
+                } else {
+                    return (col%2 == 0)
+                            ? R.color.chess_field_dark
+                            : R.color.chess_field_light;
+                }
+            }
         }
 
     }

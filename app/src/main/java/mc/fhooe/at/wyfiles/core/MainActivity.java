@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
             if (s.equals("exit")) {
                 Toast.makeText(getApplicationContext(), "Connection terminated from the other side", Toast.LENGTH_LONG).show();
                 //supportFinishAfterTransition();
-            } else if (s.startsWith("game")) {
+            } else if (s.startsWith("game:")) { // Indicates a new game connection request
                 int gameId = Integer.parseInt(s.split(":")[1]);
                 Game g = ResourceManager.getGameById(MainActivity.this, gameId);
                 if (g != null) {
