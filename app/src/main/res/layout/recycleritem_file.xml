@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="4dp"
-    app:cardElevation="4dp">
+    android:layout_margin="8dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:padding="8dp">
 
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/recycleritem_file_image"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/recycleritem_file_txt_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="17sp"
+        android:layout_toEndOf="@+id/recycleritem_file_image"
+        android:layout_toRightOf="@+id/recycleritem_file_image"
+        android:text="MARS" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/reclyceritem_file_image"/>
+    <TextView
+        android:id="@+id/recycleritem_file_txt_meta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recycleritem_file_txt_title"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@+id/recycleritem_file_image"
+        android:layout_toRightOf="@+id/recycleritem_file_image"
+        android:text="hat sars" />
 
-    </RelativeLayout>
+</RelativeLayout>
 
-</android.support.v7.widget.CardView>

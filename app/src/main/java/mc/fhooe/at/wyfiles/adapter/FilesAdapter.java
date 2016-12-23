@@ -5,13 +5,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import mc.fhooe.at.wyfiles.R;
-import mc.fhooe.at.wyfiles.util.WyFile;
+import mc.fhooe.at.wyfiles.util.ResourceManager;
 
 /**
  * @author Martin Macheiner
@@ -21,15 +28,15 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
     public interface OnItemClickListener {
 
-        void onItemClick(WyFile f, View v);
+        void onItemClick(File f, View v);
     }
 
     public interface OnItemLongClickListener {
 
-        void onItemLongClick(WyFile f, View v);
+        void onItemLongClick(File f, View v);
     }
 
-    private ArrayList<WyFile> data;
+    private ArrayList<File> data;
     private Context context;
     private final LayoutInflater inflater;
 
@@ -38,7 +45,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
     //----------------------------------------------------------------------
 
-    public FilesAdapter(Context context, List<WyFile> data) {
+    public FilesAdapter(Context context, List<File> data) {
 
         inflater = LayoutInflater.from(context);
         this.context = context;
@@ -71,20 +78,20 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     }
 
     //-----------------------------Data Section-----------------------------
-    public void addEntity(int i, WyFile entity) {
+    public void addEntity(int i, File entity) {
         data.add(i, entity);
         notifyItemInserted(i);
     }
 
-    public void addEntityAtLast(WyFile entity) {
+    public void addEntityAtLast(File entity) {
         addEntity(data.size(), entity);
     }
 
-    public void addEntityAtFirst(WyFile entity) {
+    public void addEntityAtFirst(File entity) {
         addEntity(0, entity);
     }
 
-    public void deleteEntity(WyFile book) {
+    public void deleteEntity(File book) {
         int location = getLocation(data, book);
         if (location > -1) {
             deleteEntity(location);
@@ -97,12 +104,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     }
 
     public void moveEntity(int i, int dest) {
-        WyFile temp = data.remove(i);
+        File temp = data.remove(i);
         data.add(dest, temp);
         notifyItemMoved(i, dest);
     }
 
-    public void setData(List<WyFile> data) {
+    public void setData(List<File> data) {
 
         if (data == null) {
             return;
@@ -118,7 +125,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
         //Add and move items
         for (int i = 0; i < data.size(); ++i) {
-            WyFile entity = data.get(i);
+            File entity = data.get(i);
             int location = getLocation(this.data, entity);
             if (location < 0) {
                 addEntity(i, entity);
@@ -128,10 +135,10 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         }
     }
 
-    private int getLocation(List<WyFile> data, WyFile searching) {
+    private int getLocation(List<File> data, File searching) {
 
         for (int j = 0; j < data.size(); ++j) {
-            WyFile newEntity = data.get(j);
+            File newEntity = data.get(j);
             if (searching.equals(newEntity)) {
                 return j;
             }
@@ -143,8 +150,16 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     //----------------------------------------------------------------------
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private WyFile file;
+        private File file;
 
+        @Bind(R.id.recycleritem_file_image)
+        protected ImageView imgView;
+
+        @Bind(R.id.recycleritem_file_txt_title)
+        protected TextView txtTitle;
+
+        @Bind(R.id.recycleritem_file_txt_meta)
+        protected TextView txtMeta;
 
         public ViewHolder(final View itemView) {
             super(itemView);
@@ -169,10 +184,37 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
             });
         }
 
-        public void bind(WyFile f) {
+        public void bind(File f) {
 
             file = f;
-            // TODO Set data to view elements
+            txtTitle.setText(f.getName());
+
+            String meta;
+            DateTime dt = new DateTime(f.lastModified());
+            String time = DateTimeFormat.forPattern("dd MMM yyyy, kk:mm").print(dt);
+            if (f.isDirectory()) {
+                imgView.setImageResource(R.mipmap.ic_file_folder);
+                meta = context.getString(R.string.file_metadata_folder, f.list().length, time);
+            } else {
+                String prefix = "Bytes";
+                long size = f.length();
+                if (size > 1024) {
+                    size /= 1024;
+                    prefix = "KB";
+                }
+                if (size > 1024) {
+                    size /= 1024;
+                    prefix = "MB";
+                }
+                meta = context.getString(R.string.file_metadata_file, size, prefix, time);
+                imgView.setImageResource(ResourceManager.getImageIconForFileExtension(getFileExtension()));
+            }
+
+            txtMeta.setText(meta);
+        }
+
+        private String getFileExtension() {
+            return file.getName().substring(file.getName().lastIndexOf(".") + 1);
         }
 
     }

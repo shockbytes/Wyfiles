@@ -3,9 +3,13 @@ package mc.fhooe.at.wyfiles.core;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -20,6 +24,8 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
+
+import com.peak.salut.Salut;
 
 import javax.inject.Inject;
 
@@ -41,8 +47,20 @@ public class ConnectionActivity extends AppCompatActivity
     @Inject
     protected BluetoothAdapter bluetoothAdapter;
 
+    private String wifiP2pDeviceName;
+
     private PendingIntent nfcPendingIntent;
+
     private final String MIME_TYPE = "application/vnd.at.fhooe.mc.wyfiles";
+
+    private IntentFilter filter = new IntentFilter(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            WifiP2pDevice device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+            wifiP2pDeviceName = device.deviceName;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +76,18 @@ public class ConnectionActivity extends AppCompatActivity
                 .replace(android.R.id.content, new ConnectionFragment())
                 .commit();
 
+        registerReceiver(receiver, filter);
+
+        if (!Salut.isWiFiEnabled(this)){
+            Salut.enableWiFi(this);
+        }
+
         // Bluetooth permission denied, ask for permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PERM_REQ_CODE);
         } else {
             // Permission granted, just initialize bluetooth
@@ -72,15 +97,23 @@ public class ConnectionActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PERM_REQ_CODE && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
             setupBluetooth();
         } else {
-            finishWithToastMessage("Sorry, we need Bluetooth permission!");
+            finishWithToastMessage(getString(R.string.grant_permissions));
         }
     }
 
@@ -102,7 +135,7 @@ public class ConnectionActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        IntentFilter[] nfcTagFilters = new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
+        IntentFilter[] nfcTagFilters = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
         nfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, nfcTagFilters, null);
 
         String payload = processNfcIntent(getIntent());
@@ -118,14 +151,13 @@ public class ConnectionActivity extends AppCompatActivity
         String authType = "none";
         String btName = bluetoothAdapter.getName();
         String role = "server";
-        String pin = "1234";
 
         String text = "auth:" + authType + delimeter + "btdev:" + btName + delimeter
-                + "role:" + role + delimeter + "pin:" + pin;
+                + "role:" + role + delimeter + "wifidev:" + wifiP2pDeviceName;
 
         return new NdefMessage(new NdefRecord[]{
-           NdefRecord.createMime(MIME_TYPE, text.getBytes())
-           //, NdefRecord.createApplicationRecord(getPackageName())
+                NdefRecord.createMime(MIME_TYPE, text.getBytes())
+                //, NdefRecord.createApplicationRecord(getPackageName())
         });
     }
 
@@ -142,14 +174,8 @@ public class ConnectionActivity extends AppCompatActivity
     private void setupNfc() {
 
         if (nfcAdapter == null) {
-            Toast.makeText(getApplicationContext(),
-                    "NFC not available on the device... ",
-                    Toast.LENGTH_SHORT).show();
-            supportFinishAfterTransition();
+            finishWithToastMessage(getString(R.string.nfc_not_available));
         } else if (!nfcAdapter.isEnabled()) {
-            Toast.makeText(getApplicationContext(),
-                    "Please switch on NFC",
-                    Toast.LENGTH_SHORT).show();
             startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
         }
 

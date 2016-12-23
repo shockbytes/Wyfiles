@@ -2,6 +2,8 @@ package mc.fhooe.at.wyfiles.core;
 
 import android.app.Application;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import mc.fhooe.at.wyfiles.dagger.AppComponent;
 import mc.fhooe.at.wyfiles.dagger.AppModule;
 import mc.fhooe.at.wyfiles.dagger.DaggerAppComponent;
@@ -18,6 +20,8 @@ public class WyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        JodaTimeAndroid.init(this);
 
         appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))

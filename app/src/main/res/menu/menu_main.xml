@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_main_wifi_connection"
+        android:icon="@drawable/ic_wifi_connected"
+        android:visible="false"
+        android:title="Wifi"
+        android:enabled="false"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_main_bluetooth_connection"
+        android:icon="@drawable/ic_bluetooth_connected"
+        android:title="Bluetooth"
+        android:visible="false"
+        android:enabled="false"
+        app:showAsAction="always" />
+
+</menu>

@@ -7,7 +7,7 @@
     <string name="game_ships_own_ships">Eigene Schiffe: %d</string>
     <string name="tab_files">Dateien</string>
     <string name="tab_games">Spiele</string>
-    <string name="title_main">Verbunden mit %s</string>
+    <string name="title_main">Remote %s</string>
     <string name="game_chess_description">Spiel ein wenig Low-Graphic Schach gegen deinen Partner</string>
     <string name="game_ships_description">Versenke gegnerische Schiffe und gewinne die Schlacht</string>
     <string name="toast_battleship_already_selected">Feld wurde bereits geklickt, wähle ein anderes!</string>
@@ -20,4 +20,14 @@
     <string name="chess_good_strike">Guter Zug!</string>
     <string name="chess_partner_turn">Dein Partner ist dran!</string>
     <string name="chess_your_turn">Es ist dein Zug</string>
+    <string name="chess_enemy_strike">Oh nein!</string>
+    <string name="file_metadata_folder" formatted="false">%d Dateien • %s</string>
+    <string name="toast_chess_exit">Dein Partner hat die Partie verlassen</string>
+    <string name="toast_chess_rematch">Du hast verloren, willst du eine Revanche?</string>
+    <string name="wifi_cannot_craft_message">Datei kann nicht gelesen werden</string>
+    <string name="wifi_cannot_send_message">Nachricht kann nicht gesendet werden!</string>
+    <string name="wifi_no_support">Das Gerät unterstützt Wifi Direct nicht!</string>
+    <string name="wifi_register_error">Registrierung nicht möglich…</string>
+    <string name="grant_permissions">Bitte gewähre alle Berechtigungen, ansonsten ist die App wirklich nutzlos!</string>
+    <string name="nfc_not_available">NFC auf diesem Gerät nicht verfügbar…</string>
 </resources>

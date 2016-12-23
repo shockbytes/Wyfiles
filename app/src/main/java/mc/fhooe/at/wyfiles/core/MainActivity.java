@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentTransaction;
@@ -18,6 +19,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.View;
 import android.widget.Toast;
 
 import javax.inject.Inject;
@@ -34,6 +38,14 @@ import rx.Subscriber;
 
 public class MainActivity extends AppCompatActivity
         implements TabLayout.OnTabSelectedListener, WyfilesManager.WyfilesCallback {
+
+
+    public interface OnFileReceivedListener {
+
+        void onFileReceived(String filename);
+
+        void openReceiveFolder();
+    }
 
     public static Intent newIntent(Context context, String payload, boolean isServer) {
         return new Intent(context, MainActivity.class)
@@ -62,9 +74,13 @@ public class MainActivity extends AppCompatActivity
     @Inject
     protected Vibrator vibrator;
 
+    private Menu menu;
+
     private int primaryOld;
     private int primaryDarkOld;
     private int initialTabPosition;
+
+    private OnFileReceivedListener onFileReceivedListener;
 
     private Subscriber<String> bluetoothReadSubscriber = new Subscriber<String>() {
 
@@ -75,15 +91,19 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onError(Throwable e) {
             Log.wtf("Wyfiles", "ReadSubscriber: " + e.getMessage());
-            Toast.makeText(getApplicationContext(), "MainSubscriber: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onNext(String s) {
 
             if (s.equals("exit")) {
-                Toast.makeText(getApplicationContext(), "Connection terminated from the other side", Toast.LENGTH_LONG).show();
-                //supportFinishAfterTransition();
+                Snackbar.make(findViewById(android.R.id.content), "Connection terminated", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("CLOSE", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                supportFinishAfterTransition();
+                            }
+                        }).show();
             } else if (s.startsWith("game:")) { // Indicates a new game connection request
                 int gameId = Integer.parseInt(s.split(":")[1]);
                 Game g = ResourceManager.getGameById(MainActivity.this, gameId);
@@ -119,9 +139,17 @@ public class MainActivity extends AppCompatActivity
         boolean isServer = getIntent().getBooleanExtra(ARG_IS_SERVER, false);
         if (isServer) {
             wyfilesManager.startBluetoothServer(this);
+            wyfilesManager.establishWifiDirectConnection(this, true, null, this);
         }
 
-        initialize();
+        initializeTabs();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -199,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         primaryDarkOld = primaryDark;
     }
 
-    private void initialize() {
+    private void initializeTabs() {
 
         tabLayout.addOnTabSelectedListener(this);
         TabLayout.Tab initialTab = tabLayout.getTabAt(initialTabPosition);
@@ -211,10 +239,30 @@ public class MainActivity extends AppCompatActivity
 
     private void getDataFromPayload(String payload) {
 
+        // Get bluetooth data
         String[] loads = payload.split(";");
         String bluetoothClientDevice = loads[1].split(":")[1];
 
+        // Get wifi direct data
+        String wifiHostName = loads[3].split(":")[1];
+
         wyfilesManager.connectWithBluetoothDevice(bluetoothClientDevice, this);
+        wyfilesManager.establishWifiDirectConnection(this, false, wifiHostName, this);
+    }
+
+    public void adjustForFileExplorer(boolean onCreated) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int elevation = onCreated ? 0 : (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    8, getResources().getDisplayMetrics());
+            Log.wtf("Wyfiles", "Elevation: " + elevation);
+            appBar.setElevation(elevation);
+        }
+
+    }
+
+    public void registerFileListener(OnFileReceivedListener listener) {
+        onFileReceivedListener = listener;
     }
 
     @Override
@@ -262,11 +310,53 @@ public class MainActivity extends AppCompatActivity
     public void onBluetoothConnected(String remoteDeviceName) {
 
         setTitle(getString(R.string.title_main, remoteDeviceName));
-        vibrator.vibrate(200);
+        menu.getItem(1).setVisible(true);
+        vibrator.vibrate(100);
         // Add read subscriber
         wyfilesManager.requestBluetoothReadConnection().subscribe(bluetoothReadSubscriber);
         // Write hello message
         wyfilesManager.sendBluetoothHelloMessage();
+    }
+
+    @Override
+    public void onWifiDirectError(final String message, Severity severity) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onWifiDirectFileTransferred(final String filename) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(findViewById(android.R.id.content), filename + " successfully transferred!", Snackbar.LENGTH_LONG)
+                        .setAction("SHOW", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (onFileReceivedListener != null) {
+                                    onFileReceivedListener.openReceiveFolder();
+                                }
+                            }
+                        }).show();
+            }
+        });
+        if (onFileReceivedListener != null) {
+            onFileReceivedListener.onFileReceived(filename);
+        }
+    }
+
+    @Override
+    public void onWifiDirectError(int messageId, Severity severity) {
+        onWifiDirectError(getString(messageId), severity);
+    }
+
+    @Override
+    public void onWifiDirectConnected(String remoteDevice) {
+        menu.getItem(0).setVisible(true);
     }
 
 }

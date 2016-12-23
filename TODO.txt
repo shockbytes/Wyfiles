@@ -1,0 +1,19 @@
+
+
+Still on the table:
+
+* Chess rematch dialog
+* Battleships rematch dialog
+* Change Bluetooth communication protocol -> Use JSON
+* Clean up code base
+* Replace Toasts with Snackbars
+
+DONE:
+
+* Design issues
+* Better indication if both connections are available
+* Refine file explorer UI
+* Show transferred file
+* Reload current folder after successful data transfer
+
+

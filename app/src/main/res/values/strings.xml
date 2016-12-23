@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">Wyfiles</string>
-    <string name="app_version" translatable="false">Version 0.6.1</string>
+    <string name="app_version" translatable="false">Version 0.9</string>
 
     <string name="tab_files">Files</string>
     <string name="tab_games">Games</string>
 
-    <string name="title_main">Connected to %s</string>
+    <string name="title_main">Remote %s</string>
 
     <string name="game_ships">Battleships</string>
     <string name="game_ships_description">Plunge the enemy battleships and win the battle</string>
@@ -17,7 +17,7 @@
     <string name="toast_game_not_your_turn">It\'s not your turn!</string>
     <string name="toast_battleship_rematch">You won! Want a rematch?</string>
     <string name="toast_battleship_exit">Enemy left the game</string>
-    <string name="toast_chess_exit">Partner quitted chess game</string>
+    <string name="toast_chess_exit">Partner quit chess game</string>
     <string name="chess_cannot_strike_figure">Cannot strike enemy figure</string>
     <string name="chess_good_strike">Good strike!</string>
     <string name="chess_checkmate">CHECKMATE!</string>
@@ -25,6 +25,15 @@
     <string name="chess_your_turn">It\'s your turn</string>
     <string name="chess_partner_turn">Partner turn!</string>
     <string name="chess_enemy_strike">Oh no!!!</string>
-    <string name="toast_chess_rematch">Du hast verloren, willst du eine Revanche?</string>
+    <string name="wifi_no_support">Device does not support Wifi Direct!</string>
+    <string name="wifi_register_error">Failed to register…</string>
+    <string name="wifi_cannot_craft_message">Cannot read file</string>
+    <string name="wifi_cannot_send_message">A problem while sending occurred</string>
+
+    <string name="file_metadata_file" translatable="false">%d %s • %s</string>
+    <string name="file_metadata_folder" formatted="false">%d files • %s</string>
+    <string name="toast_chess_rematch">You have lost, do you want a rematch?</string>
+    <string name="nfc_not_available">NFC not available on the device…</string>
+    <string name="grant_permissions">Please grant all permissions, otherwise this app is rather useless!</string>
 
 </resources>
