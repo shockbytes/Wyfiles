@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,19 +28,15 @@ import mc.fhooe.at.wyfiles.communication.WyfilesManager;
 import mc.fhooe.at.wyfiles.core.WyApp;
 import mc.fhooe.at.wyfiles.games.battleships.BattleshipField;
 import mc.fhooe.at.wyfiles.games.battleships.BattleshipsGame;
+import mc.fhooe.at.wyfiles.util.WyUtils;
 import rx.Subscriber;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.OnItemClickListener {
+public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.OnItemClickListener, RematchDialogFragment.OnRematchSelectedListener {
 
     private static final String ARG_IS_HOST = "arg_is_host";
-
-    private static final String ATTACK_REQ_STRING = "bs,at,req,";
-    private static final String ATTACK_RESP_STRING = "bs,at,resp,";
-    private static final String REMATCH_STRING = "game_rematch";
-    private static final String EXIT_MATCH_STRING = "game_exit_match";
 
     public static BattleshipsFragment newInstance(boolean isHost) {
         BattleshipsFragment fragment = new BattleshipsFragment();
@@ -79,64 +78,83 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
 
         @Override
         public void onError(Throwable e) {
-            Toast.makeText(getContext(), "BattleshipFrag; " + e.getMessage() + "\n" +e.getCause().getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onNext(String s) {
 
-            if (s.startsWith(ATTACK_RESP_STRING)) {
+            JSONObject object;
+            try {
+                object = new JSONObject(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            String action = WyUtils.getActionFromMessage(object);
+            switch (action) {
+
                 // THIS WILL ONLY AFFECT ENEMY BOARD
-                // Example: "bs,at,resp,4;true"
+                case WyUtils.ACTION_GAME_BATTLESHIPS_ATTACK_RESPONSE:
 
-                String msg = s.substring(s.lastIndexOf(",")+1 , s.length());
-                String[] sp = msg.split(";");
-                int field = Integer.parseInt(sp[0]);
-                boolean isShip = Boolean.parseBoolean(sp[1]);
+                    try {
 
-                BattleshipField bsField = enemyAdapter.getItemAtPosition(field);
+                        int position = object.getInt("position");
+                        boolean isShip = object.getBoolean("isShip");
+                        BattleshipField enemyField = enemyAdapter.getItemAtPosition(position);
 
-                if (isShip) {
-                    bsField.changeFieldState(BattleshipField.FieldState.SHOT);
-                    int enemyShips = game.decreaseEnemyCount();
-                    String strEnemy = getString(R.string.game_ships_enemy_ships, enemyShips);
-                    txtEnemyCount.setText(strEnemy);
-                } else {
-                    bsField.changeFieldState(BattleshipField.FieldState.FAILED_SHOT);
-                }
-                enemyAdapter.notifyItemChanged(field);
-                game.changeTurn();
+                        if (isShip) {
+                            enemyField.changeFieldState(BattleshipField.FieldState.SHOT);
+                            int enemyShips = game.decreaseEnemyCount();
+                            String strEnemy = getString(R.string.game_ships_enemy_ships, enemyShips);
+                            txtEnemyCount.setText(strEnemy);
+                        } else {
+                            enemyField.changeFieldState(BattleshipField.FieldState.FAILED_SHOT);
+                        }
+                        enemyAdapter.notifyItemChanged(position);
+                        game.changeTurn();
 
-            } else if (s.startsWith(ATTACK_REQ_STRING)) {
-                // THIS WILL ONLY AFFECT OWN BOARD
-                // Example: "bs,at,req,4"
-                int field = Integer.parseInt(s.substring(s.lastIndexOf(",")+1 , s.length()));
-
-                BattleshipField bsField = ownAdapter.getItemAtPosition(field);
-                bsField.setClicked(true);
-                boolean isShip = ownAdapter.isFieldAShip(field);
-                if (isShip) {
-                    int ownShips = game.decreaseOwnCount();
-                    String strOwn = getString(R.string.game_ships_own_ships, ownShips);
-                    txtOwnCount.setText(strOwn);
-
-                    if (ownShips == 0) {
-                        wyfilesManager.sendBluetoothMessage(REMATCH_STRING);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }
-                ownAdapter.notifyItemChanged(field);
-                game.changeTurn();
 
-                // Send back response
-                String answer = ATTACK_RESP_STRING + field + ";" + isShip;
-                wyfilesManager.sendBluetoothMessage(answer);
+                    break;
 
-            } else if (s.equals(REMATCH_STRING)) {
-                Toast.makeText(getContext(), R.string.toast_battleship_rematch, Toast.LENGTH_LONG).show();
-                // TODO Show dialog for rematch
-            } else if (s.equals(EXIT_MATCH_STRING)) {
-                Toast.makeText(getContext(), R.string.toast_battleship_exit, Toast.LENGTH_LONG).show();
-                getActivity().supportFinishAfterTransition();
+                case WyUtils.ACTION_GAME_BATTLESHIPS_ATTACK_REQUEST:
+
+                    try {
+                        int position = object.getInt("position");
+                        BattleshipField bsField = ownAdapter.getItemAtPosition(position);
+                        bsField.setClicked(true);
+                        boolean isShip = ownAdapter.isFieldAShip(position);
+                        if (isShip) {
+                            int ownShips = game.decreaseOwnCount();
+                            String strOwn = getString(R.string.game_ships_own_ships, ownShips);
+                            txtOwnCount.setText(strOwn);
+
+                            if (ownShips == 0) {
+                                gameOver();
+                            }
+                        }
+                        ownAdapter.notifyItemChanged(position);
+                        game.changeTurn();
+                        wyfilesManager.sendBluetoothMessage(
+                                WyUtils.createBattleshipAttackResponseMessage(position, isShip));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case WyUtils.ACTION_GAME_REMATCH:
+
+                    initializeGame();
+                    break;
+
+                case WyUtils.ACTION_GAME_QUIT:
+                    Toast.makeText(getContext(), R.string.toast_battleship_exit, Toast.LENGTH_LONG).show();
+                    getActivity().supportFinishAfterTransition();
+                    break;
             }
         }
     };
@@ -150,11 +168,13 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
         super.onCreate(savedInstanceState);
         ((WyApp) getActivity().getApplication()).getAppComponent().inject(this);
         isHost = getArguments().getBoolean(ARG_IS_HOST, false);
+
+        wyfilesManager.requestBluetoothReadConnection().subscribe(readSubscriber);
     }
 
     @Override
     public void onDestroy() {
-        wyfilesManager.sendBluetoothMessage(EXIT_MATCH_STRING);
+        wyfilesManager.sendBluetoothMessage(WyUtils.createQuitMessage());
         super.onDestroy();
     }
 
@@ -201,11 +221,16 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
         rvEnemy.setLayoutManager(new GridLayoutManager(getContext(), cols));
         rvEnemy.setAdapter(enemyAdapter);
 
-        wyfilesManager.requestBluetoothReadConnection().subscribe(readSubscriber);
-
         txtOwnCount.setText(getString(R.string.game_ships_own_ships, ships));
         txtEnemyCount.setText(getString(R.string.game_ships_enemy_ships, ships));
+    }
 
+    private void gameOver() {
+
+        RematchDialogFragment rdf = RematchDialogFragment
+                .newInstance(R.string.text_battleship_rematch, R.mipmap.ic_game_ships);
+        rdf.setOnRematchSelectedListener(BattleshipsFragment.this);
+        rdf.show(getFragmentManager(), "rematch-dialog");
     }
 
     @Override
@@ -221,6 +246,13 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
         }
 
         vibrator.vibrate(100);
-        wyfilesManager.sendBluetoothMessage(ATTACK_REQ_STRING + pos);
+        wyfilesManager.sendBluetoothMessage(WyUtils.createBattleshipAttackRequestMessage(pos));
+    }
+
+    @Override
+    public void onRematchSelected() {
+
+        initializeGame();
+        wyfilesManager.sendBluetoothMessage(WyUtils.createRematchMessage());
     }
 }

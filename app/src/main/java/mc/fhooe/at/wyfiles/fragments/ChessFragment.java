@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +31,13 @@ import mc.fhooe.at.wyfiles.games.chess.ChessField;
 import mc.fhooe.at.wyfiles.games.chess.ChessGame;
 import mc.fhooe.at.wyfiles.games.chess.King;
 import mc.fhooe.at.wyfiles.games.chess.Pawn;
+import mc.fhooe.at.wyfiles.util.WyUtils;
 import rx.Subscriber;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickListener {
-
-    private static final String MSG_CHESS_MOVE_PREFIX = "chess_move:";
-    private static final String MSG_CHESS_REMATCH = "chess_rematch";
-    private static final String MSG_CHESS_EXIT = "chess_exit";
+public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickListener, RematchDialogFragment.OnRematchSelectedListener {
 
     private static final String ARG_IS_HOST = "arg_is_host";
 
@@ -84,26 +84,45 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
         @Override
         public void onNext(String s) {
 
-            if (s.equals(MSG_CHESS_EXIT)) {
-                Toast.makeText(getContext(), R.string.toast_chess_exit, Toast.LENGTH_LONG).show();
-                getActivity().supportFinishAfterTransition();
-            } else if (s.equals(MSG_CHESS_REMATCH)) {
-                Toast.makeText(getContext(), R.string.toast_chess_rematch, Toast.LENGTH_LONG).show();
-                // TODO Show dialog for rematch
-            } else if (s.startsWith(MSG_CHESS_MOVE_PREFIX)) {
-                // prefix:from,to,true - Example: chess_move:5,16,true
+            JSONObject object;
+            try {
+                object = new JSONObject(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
 
-                String[] data = s.split(":")[1].split(",");
-                int from = Integer.parseInt(data[0]);
-                int to = Integer.parseInt(data[1]);
+            String action = WyUtils.getActionFromMessage(object);
+            switch (action) {
 
-                // Set selected values first
-                selectedPosition = from;
-                selectedField = adapter.getItemAtPosition(from);
+                case WyUtils.ACTION_GAME_QUIT:
+                    Toast.makeText(getContext(), R.string.toast_chess_exit, Toast.LENGTH_LONG).show();
+                    getActivity().supportFinishAfterTransition();
+                    break;
 
-                handleAction(adapter.getItemAtPosition(to), to, true);
-                textInfo.setText(R.string.chess_your_turn);
-                game.changeTurn();
+                case WyUtils.ACTION_GAME_REMATCH:
+
+                    initializeGame();
+                    break;
+
+                case WyUtils.ACTION_GAME_CHESS_MOVE:
+
+                    try {
+                        int from = object.getInt("from");
+                        int to = object.getInt("to");
+
+                        // Set selected values first
+                        selectedPosition = from;
+                        selectedField = adapter.getItemAtPosition(from);
+
+                        handleAction(adapter.getItemAtPosition(to), to, true);
+                        textInfo.setText(R.string.chess_your_turn);
+                        game.changeTurn();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
             }
         }
     };
@@ -116,14 +135,15 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((WyApp) getActivity().getApplication()).getAppComponent().inject(this);
-
-        isVibrationEnabled = true;
         isHost = getArguments().getBoolean(ARG_IS_HOST, false);
+        isVibrationEnabled = true;
+
+        wyfilesManager.requestBluetoothReadConnection().subscribe(readSubscriber);
     }
 
     @Override
     public void onDestroy() {
-        wyfilesManager.sendBluetoothMessage(MSG_CHESS_EXIT);
+        wyfilesManager.sendBluetoothMessage(WyUtils.createQuitMessage());
         super.onDestroy();
     }
 
@@ -139,7 +159,6 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         initializeGame();
     }
 
@@ -148,6 +167,13 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
         readSubscriber.unsubscribe();
         ButterKnife.unbind(this);
         super.onDestroyView();
+    }
+
+    private void gameOver() {
+        RematchDialogFragment rdf = RematchDialogFragment
+                .newInstance(R.string.text_chess_rematch, R.mipmap.ic_game_chess);
+        rdf.setOnRematchSelectedListener(ChessFragment.this);
+        rdf.show(getFragmentManager(), "rematch-dialog");
     }
 
     private void initializeGame() {
@@ -161,8 +187,6 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 8));
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
-
-        wyfilesManager.requestBluetoothReadConnection().subscribe(readSubscriber);
     }
 
     private void handleFigureMovement(ChessField f, int pos, boolean updateGameLogic,
@@ -179,7 +203,7 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
 
             // Notify bluetooth partner
             if (!isEnemyMove){
-                wyfilesManager.sendBluetoothMessage(MSG_CHESS_MOVE_PREFIX+selectedPosition+","+pos);
+                wyfilesManager.sendBluetoothMessage(WyUtils.createChessMessage(selectedPosition, pos));
             }
 
             selectedField.setHighlighted(false);
@@ -221,9 +245,9 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
                     vibrator.vibrate(new long[]{0, 500, 300, 500}, -1);
                 }
                 adapter.setOnItemClickListener(null);
-                // Send rematch request
-                if (!isEnemyMove) {
-                    wyfilesManager.sendBluetoothMessage(MSG_CHESS_REMATCH);
+                // Ask rematch request
+                if (isEnemyMove) {
+                    gameOver();
                 }
             } else {
                 textInfo.setText(isEnemyMove ? R.string.chess_enemy_strike : R.string.chess_good_strike);
@@ -341,5 +365,12 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
         }
 
         handleAction(f, pos, false);
+    }
+
+    @Override
+    public void onRematchSelected() {
+
+        initializeGame();
+        wyfilesManager.sendBluetoothMessage(WyUtils.createRematchMessage());
     }
 }

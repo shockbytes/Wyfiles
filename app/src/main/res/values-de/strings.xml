@@ -13,7 +13,7 @@
     <string name="toast_battleship_already_selected">Feld wurde bereits geklickt, wähle ein anderes!</string>
     <string name="toast_battleship_exit">Gegner hat das Spiel verlassen</string>
     <string name="toast_game_not_your_turn">Warte bis dein Zug kommt!</string>
-    <string name="toast_battleship_rematch">Du hast gewonnen! Willst du eine Revanche?</string>
+    <string name="text_battleship_rematch">Du hast die Schlacht gewonnen! Willst du eine Revanche?</string>
     <string name="chess_cannot_move_figure">Figur kann nicht bewegt werden</string>
     <string name="chess_cannot_strike_figure">Figur kann nicht geschlagen werden</string>
     <string name="chess_checkmate">SCHACHMATT!</string>
@@ -23,11 +23,14 @@
     <string name="chess_enemy_strike">Oh nein!</string>
     <string name="file_metadata_folder" formatted="false">%d Dateien • %s</string>
     <string name="toast_chess_exit">Dein Partner hat die Partie verlassen</string>
-    <string name="toast_chess_rematch">Du hast verloren, willst du eine Revanche?</string>
+    <string name="text_chess_rematch">Du hast das Schachspiel verloren, willst du eine Revanche?</string>
     <string name="wifi_cannot_craft_message">Datei kann nicht gelesen werden</string>
     <string name="wifi_cannot_send_message">Nachricht kann nicht gesendet werden!</string>
     <string name="wifi_no_support">Das Gerät unterstützt Wifi Direct nicht!</string>
     <string name="wifi_register_error">Registrierung nicht möglich…</string>
     <string name="grant_permissions">Bitte gewähre alle Berechtigungen, ansonsten ist die App wirklich nutzlos!</string>
     <string name="nfc_not_available">NFC auf diesem Gerät nicht verfügbar…</string>
+    <string name="connection_terminated">Verbindung geschlossen</string>
+    <string name="rematch">Revanche</string>
+    <string name="no_secure_line">Keine sichere Verbindung</string>
 </resources>

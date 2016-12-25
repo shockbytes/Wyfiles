@@ -24,6 +24,9 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
@@ -34,6 +37,7 @@ import mc.fhooe.at.wyfiles.fragments.FilesFragment;
 import mc.fhooe.at.wyfiles.fragments.GamesFragment;
 import mc.fhooe.at.wyfiles.util.Game;
 import mc.fhooe.at.wyfiles.util.ResourceManager;
+import mc.fhooe.at.wyfiles.util.WyUtils;
 import rx.Subscriber;
 
 public class MainActivity extends AppCompatActivity
@@ -90,22 +94,32 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onError(Throwable e) {
-            Log.wtf("Wyfiles", "ReadSubscriber: " + e.getMessage());
+            Log.wtf("Wyfiles", e.getMessage());
         }
 
         @Override
         public void onNext(String s) {
 
-            if (s.equals("exit")) {
-                Snackbar.make(findViewById(android.R.id.content), "Connection terminated", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("CLOSE", new View.OnClickListener() {
+            JSONObject object;
+            try {
+                object = new JSONObject(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            String action = WyUtils.getActionFromMessage(object);
+            if (action.equals(WyUtils.ACTION_EXIT)) {
+                Snackbar.make(findViewById(android.R.id.content), R.string.connection_terminated,
+                        Snackbar.LENGTH_INDEFINITE).setAction("CLOSE", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 supportFinishAfterTransition();
                             }
                         }).show();
-            } else if (s.startsWith("game:")) { // Indicates a new game connection request
-                int gameId = Integer.parseInt(s.split(":")[1]);
+
+            } else if (action.equals(WyUtils.ACTION_GAME_INIT)) { // Indicates a new game connection request
+                int gameId = WyUtils.getGameIdFromMessage(object);
                 Game g = ResourceManager.getGameById(MainActivity.this, gameId);
                 if (g != null) {
                     startActivity(GameActivity.newIntent(MainActivity.this, g, false),
@@ -239,15 +253,29 @@ public class MainActivity extends AppCompatActivity
 
     private void getDataFromPayload(String payload) {
 
-        // Get bluetooth data
-        String[] loads = payload.split(";");
-        String bluetoothClientDevice = loads[1].split(":")[1];
+        try {
 
-        // Get wifi direct data
-        String wifiHostName = loads[3].split(":")[1];
+            JSONObject object = new JSONObject(payload);
+            String bluetoothClientDevice = object.getString("btdev");
+            String wifiHostName = object.getString("wifidev");
 
-        wyfilesManager.connectWithBluetoothDevice(bluetoothClientDevice, this);
-        wyfilesManager.establishWifiDirectConnection(this, false, wifiHostName, this);
+            wyfilesManager.connectWithBluetoothDevice(bluetoothClientDevice, this);
+            wyfilesManager.establishWifiDirectConnection(this, false, wifiHostName, this);
+
+            String authMode = object.getString("auth");
+            if (authMode.equals("STANDARD")) {
+                String encodedIv = object.getString("initvec");
+                String encodedKey = object.getString("authkey");
+                wyfilesManager.initializeCipherMode(encodedIv, encodedKey);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar.make(findViewById(R.id.main_content), R.string.no_secure_line,
+                    Snackbar.LENGTH_LONG).show();
+        }
     }
 
     public void adjustForFileExplorer(boolean onCreated) {
@@ -255,7 +283,6 @@ public class MainActivity extends AppCompatActivity
             int elevation = onCreated ? 0 : (int) TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     8, getResources().getDisplayMetrics());
-            Log.wtf("Wyfiles", "Elevation: " + elevation);
             appBar.setElevation(elevation);
         }
 
@@ -312,10 +339,7 @@ public class MainActivity extends AppCompatActivity
         setTitle(getString(R.string.title_main, remoteDeviceName));
         menu.getItem(1).setVisible(true);
         vibrator.vibrate(100);
-        // Add read subscriber
         wyfilesManager.requestBluetoothReadConnection().subscribe(bluetoothReadSubscriber);
-        // Write hello message
-        wyfilesManager.sendBluetoothHelloMessage();
     }
 
     @Override

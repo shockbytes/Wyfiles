@@ -32,6 +32,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import mc.fhooe.at.wyfiles.R;
+import mc.fhooe.at.wyfiles.util.WyCipher;
+import mc.fhooe.at.wyfiles.util.WyUtils;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -68,6 +70,8 @@ public class WyfilesManager {
     private UUID uuid;
     private WifiP2pManager wifiP2pManager;
 
+    private WyCipher cipher;
+
     private BluetoothConnection bluetoothConnection;
 
     private String bluetoothClientName;
@@ -86,13 +90,18 @@ public class WyfilesManager {
 
     @Inject
     public WyfilesManager(BluetoothAdapter bluetoothAdapter, RxBluetooth rxBluetooth, UUID uuid,
-                          NfcAdapter nfcAdapter, WifiP2pManager wifiP2pManager) {
+                          NfcAdapter nfcAdapter, WifiP2pManager wifiP2pManager, WyCipher cipher) {
 
         this.bluetoothAdapter = bluetoothAdapter;
         this.rxBluetooth = rxBluetooth;
         this.uuid = uuid;
         this.nfcAdapter = nfcAdapter;
         this.wifiP2pManager = wifiP2pManager;
+        this.cipher = cipher;
+    }
+
+    public void initializeCipherMode(String encodedIv, String encodedKey) throws Exception {
+        cipher.initializeCiphers(encodedIv, encodedKey);
     }
 
     public void setBluetoothClientName(String name) {
@@ -169,16 +178,12 @@ public class WyfilesManager {
                 public void call(final SalutDevice salutDevice) {
 
                     // Only connect if device names are equal to exchanged wifi direct name
-                    //if (salutDevice.deviceName.equals(hostDeviceName)) {
-                        Log.wtf("Wyfiles", "Try registering...");
+                    if (salutDevice.deviceName.equals(hostDeviceName)) {
                         salutNetwork.registerWithHost(salutDevice, new SalutCallback() {
                             @Override
                             public void call() {
-                                Log.wtf("Wyfiles", "Registered for " + salutDevice.deviceName);
                                 connectedSalutDevice = salutDevice;
-
-                                Log.wtf("Wyfiles", salutNetwork.registeredHost.deviceName);
-                                callback.onWifiDirectConnected(salutDevice.deviceName + "/"+salutDevice.serviceName+"/");
+                                callback.onWifiDirectConnected(salutDevice.deviceName);
                                 //salutNetwork.stopServiceDiscovery(false);
 
                             }
@@ -188,7 +193,7 @@ public class WyfilesManager {
                                 callback.onWifiDirectError(R.string.wifi_register_error, WyfilesCallback.Severity.ERROR);
                             }
                         });
-                    //}
+                    }
                 }
             }, false);
         }
@@ -215,16 +220,12 @@ public class WyfilesManager {
         }
     }
 
-    public void sendBluetoothHelloMessage() {
-        sendBluetoothMessage("Hello from " + bluetoothAdapter.getName());
-    }
-
     public void sendBluetoothGameRequest(int gameId) {
-        sendBluetoothMessage("game:" + gameId);
+        sendBluetoothMessage(WyUtils.createGameRequestMessage(gameId));
     }
 
     public void sendBluetoothExitRequest() {
-        sendBluetoothMessage("exit");
+        sendBluetoothMessage(WyUtils.createExitMessage());
     }
 
     public void sendFileViaWifi(@NonNull File file, @NonNull final WyfilesCallback callback) {

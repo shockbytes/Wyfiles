@@ -10,6 +10,7 @@ import mc.fhooe.at.wyfiles.fragments.ChessFragment;
 import mc.fhooe.at.wyfiles.fragments.ConnectionFragment;
 import mc.fhooe.at.wyfiles.fragments.FilesFragment;
 import mc.fhooe.at.wyfiles.fragments.GamesFragment;
+import mc.fhooe.at.wyfiles.fragments.RematchDialogFragment;
 
 /**
  * @author Martin Macheiner
@@ -34,4 +35,5 @@ public interface AppComponent {
 
     void inject(ChessFragment fragment);
 
+    void inject(RematchDialogFragment dialogFragment);
 }

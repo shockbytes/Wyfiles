@@ -31,6 +31,8 @@ import javax.inject.Inject;
 
 import mc.fhooe.at.wyfiles.R;
 import mc.fhooe.at.wyfiles.fragments.ConnectionFragment;
+import mc.fhooe.at.wyfiles.util.WyCipher;
+import mc.fhooe.at.wyfiles.util.WyUtils;
 
 public class ConnectionActivity extends AppCompatActivity
         implements NfcAdapter.CreateNdefMessageCallback, NfcAdapter.OnNdefPushCompleteCallback {
@@ -46,6 +48,9 @@ public class ConnectionActivity extends AppCompatActivity
 
     @Inject
     protected BluetoothAdapter bluetoothAdapter;
+
+    @Inject
+    protected WyCipher cipher;
 
     private String wifiP2pDeviceName;
 
@@ -147,13 +152,9 @@ public class ConnectionActivity extends AppCompatActivity
     @Override
     public NdefMessage createNdefMessage(NfcEvent nfcEvent) {
 
-        String delimeter = ";";
-        String authType = "none";
-        String btName = bluetoothAdapter.getName();
-        String role = "server";
-
-        String text = "auth:" + authType + delimeter + "btdev:" + btName + delimeter
-                + "role:" + role + delimeter + "wifidev:" + wifiP2pDeviceName;
+        String text = WyUtils.createConnectionMessage(bluetoothAdapter.getName(),
+                wifiP2pDeviceName, "server", "none", cipher.getEncodedSecretKey(),
+                cipher.getEncodedInitializationVector());
 
         return new NdefMessage(new NdefRecord[]{
                 NdefRecord.createMime(MIME_TYPE, text.getBytes())

@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import mc.fhooe.at.wyfiles.communication.WyfilesManager;
+import mc.fhooe.at.wyfiles.util.WyCipher;
 
 /**
  * @author Martin Macheiner
@@ -74,8 +75,10 @@ public class AppModule {
     public WyfilesManager provideWyfilesManager(RxBluetooth bluetooth, UUID uuid,
                                                 BluetoothAdapter bluetoothAdapteradapter,
                                                 WifiP2pManager wifiP2pManager,
-                                                NfcAdapter nfcAdapter) {
-        return new WyfilesManager(bluetoothAdapteradapter, bluetooth, uuid, nfcAdapter, wifiP2pManager);
+                                                NfcAdapter nfcAdapter,
+                                                WyCipher cipher) {
+        return new WyfilesManager(bluetoothAdapteradapter, bluetooth, uuid,
+                nfcAdapter, wifiP2pManager, cipher);
     }
 
     @Provides
@@ -88,6 +91,12 @@ public class AppModule {
     @Singleton
     public SharedPreferences provideSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(application);
+    }
+
+    @Provides
+    @Singleton
+    public WyCipher provideWyCipher() {
+        return new WyCipher();
     }
 
 

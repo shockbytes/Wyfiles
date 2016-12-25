@@ -1,0 +1,52 @@
+[
+  // ------------- GENERAL -------------
+  {
+    "action": "connect",
+    "role": "server/client",
+    "auth": "NONE",
+    "btdev": "bluetoothDevice",
+    "wifidev": "wifiDev",
+    "authkey" : "29jajciajc09ajckl12",
+    "initvec" : "kcp82324"
+  },
+  {
+    "action": "exit"
+  },
+  // -----------------------------------
+
+  // ---------- GAME SPECIFIC ----------
+  {
+    "action": "game_init",
+    "game": "gameId"
+  },
+  {
+    "action": "game_rematch"
+  },
+  {
+    "action": "game_rematch_acknowledge"
+  },
+  {
+    "action": "game_quit"
+  },
+  // -----------------------------------
+
+  // -------------- CHESS --------------
+  {
+    "action": "game_chess_move",
+    "from": "12",
+    "to": "13"
+  },
+  // -----------------------------------
+
+  // ----------- BATTLESHIPS -----------
+  {
+    "action": "game_battleships_attack_request",
+    "position": "10"
+  },
+  {
+    "action": "game_battleships_attack_response",
+    "position": "10",
+    "isShip": "true"
+  }
+]
+// -----------------------------------
