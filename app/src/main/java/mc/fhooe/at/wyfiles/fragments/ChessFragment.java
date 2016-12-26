@@ -187,6 +187,8 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 8));
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
+
+        textInfo.setText("");
     }
 
     private void handleFigureMovement(ChessField f, int pos, boolean updateGameLogic,

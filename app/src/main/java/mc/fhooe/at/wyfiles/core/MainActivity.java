@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
             String action = WyUtils.getActionFromMessage(object);
             if (action.equals(WyUtils.ACTION_EXIT)) {
                 Snackbar.make(findViewById(android.R.id.content), R.string.connection_terminated,
-                        Snackbar.LENGTH_INDEFINITE).setAction("CLOSE", new View.OnClickListener() {
+                        Snackbar.LENGTH_INDEFINITE).setAction(R.string.close, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 supportFinishAfterTransition();
@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity
             wyfilesManager.establishWifiDirectConnection(this, false, wifiHostName, this);
 
             String authMode = object.getString("auth");
-            if (authMode.equals("STANDARD")) {
+            if (WyfilesManager.AuthLevel.valueOf(authMode) == WyfilesManager.AuthLevel.STANDARD) {
                 String encodedIv = object.getString("initvec");
                 String encodedKey = object.getString("authkey");
                 wyfilesManager.initializeCipherMode(encodedIv, encodedKey);

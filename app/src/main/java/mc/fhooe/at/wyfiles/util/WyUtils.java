@@ -3,6 +3,8 @@ package mc.fhooe.at.wyfiles.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import mc.fhooe.at.wyfiles.communication.WyfilesManager;
+
 /**
  * @author Martin Macheiner
  *         Date: 25.12.2016.
@@ -19,17 +21,19 @@ public class WyUtils {
     public static final String ACTION_GAME_BATTLESHIPS_ATTACK_RESPONSE = "game_battleships_attack_respone";
 
     public static String createConnectionMessage(String btDev, String wifiDev, String role,
-                                                 String auth, String key, String iv) {
+                                                 WyfilesManager.AuthLevel auth, String key, String iv) {
 
         JSONObject object = new JSONObject();
         try {
             object.put("action", "connect");
             object.put("role", role);
-            object.put("auth", auth);
+            object.put("auth", auth.name());
             object.put("btdev", btDev);
             object.put("wifidev", wifiDev);
-            object.put("initvec", iv);
-            object.put("authkey", key);
+            if (auth == WyfilesManager.AuthLevel.STANDARD) {
+                object.put("initvec", iv);
+                object.put("authkey", key);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

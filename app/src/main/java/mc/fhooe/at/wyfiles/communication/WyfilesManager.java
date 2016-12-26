@@ -46,6 +46,8 @@ import rx.schedulers.Schedulers;
 
 public class WyfilesManager {
 
+    public enum AuthLevel {NONE, STANDARD}
+
     public interface WyfilesCallback {
 
         enum Severity {INFO, WARNING, ERROR}

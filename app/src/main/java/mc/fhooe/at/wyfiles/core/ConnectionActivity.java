@@ -30,6 +30,7 @@ import com.peak.salut.Salut;
 import javax.inject.Inject;
 
 import mc.fhooe.at.wyfiles.R;
+import mc.fhooe.at.wyfiles.communication.WyfilesManager;
 import mc.fhooe.at.wyfiles.fragments.ConnectionFragment;
 import mc.fhooe.at.wyfiles.util.WyCipher;
 import mc.fhooe.at.wyfiles.util.WyUtils;
@@ -153,8 +154,8 @@ public class ConnectionActivity extends AppCompatActivity
     public NdefMessage createNdefMessage(NfcEvent nfcEvent) {
 
         String text = WyUtils.createConnectionMessage(bluetoothAdapter.getName(),
-                wifiP2pDeviceName, "server", "none", cipher.getEncodedSecretKey(),
-                cipher.getEncodedInitializationVector());
+                wifiP2pDeviceName, "server", WyfilesManager.AuthLevel.NONE,
+                cipher.getEncodedSecretKey(), cipher.getEncodedInitializationVector());
 
         return new NdefMessage(new NdefRecord[]{
                 NdefRecord.createMime(MIME_TYPE, text.getBytes())

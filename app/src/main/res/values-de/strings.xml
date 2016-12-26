@@ -13,7 +13,7 @@
     <string name="toast_battleship_already_selected">Feld wurde bereits geklickt, wähle ein anderes!</string>
     <string name="toast_battleship_exit">Gegner hat das Spiel verlassen</string>
     <string name="toast_game_not_your_turn">Warte bis dein Zug kommt!</string>
-    <string name="text_battleship_rematch">Du hast die Schlacht gewonnen! Willst du eine Revanche?</string>
+    <string name="text_battleship_rematch">Du hast die Schlacht verloren! Willst du eine Revanche?</string>
     <string name="chess_cannot_move_figure">Figur kann nicht bewegt werden</string>
     <string name="chess_cannot_strike_figure">Figur kann nicht geschlagen werden</string>
     <string name="chess_checkmate">SCHACHMATT!</string>
@@ -33,4 +33,5 @@
     <string name="connection_terminated">Verbindung geschlossen</string>
     <string name="rematch">Revanche</string>
     <string name="no_secure_line">Keine sichere Verbindung</string>
+    <string name="close">ENDE</string>
 </resources>

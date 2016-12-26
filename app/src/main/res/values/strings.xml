@@ -15,7 +15,7 @@
     <string name="game_ships_own_ships">Own ships: %d</string>
     <string name="toast_battleship_already_selected">Field already clicked, Select another one!</string>
     <string name="toast_game_not_your_turn">It\'s not your turn!</string>
-    <string name="text_battleship_rematch">You have won the fight! Want a rematch?</string>
+    <string name="text_battleship_rematch">You have lost the fight! Want a rematch?</string>
     <string name="toast_battleship_exit">Enemy left the game</string>
     <string name="toast_chess_exit">Partner quit chess game</string>
     <string name="chess_cannot_strike_figure">Cannot strike enemy figure</string>
@@ -38,5 +38,6 @@
     <string name="connection_terminated">Connection terminated</string>
     <string name="rematch">Rematch</string>
     <string name="no_secure_line">Cannot initialize secure line</string>
+    <string name="close">CLOSE</string>
 
 </resources>

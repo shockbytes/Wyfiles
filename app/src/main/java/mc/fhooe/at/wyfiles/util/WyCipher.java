@@ -2,6 +2,9 @@ package mc.fhooe.at.wyfiles.util;
 
 import android.util.Base64;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
@@ -38,6 +41,7 @@ public class WyCipher {
             KeyGenerator generator = KeyGenerator.getInstance("AES");
             generator.init(rand);
             secretKey = generator.generateKey();
+            initVector = generateInitializationVector();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,6 +67,21 @@ public class WyCipher {
         //Initialize decryption cipher
         decryptionCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         decryptionCipher.init(Cipher.DECRYPT_MODE, secretKey, ivParams);
+    }
+
+    private byte[] generateInitializationVector() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] bytes = new byte[256];
+        new SecureRandom().nextBytes(bytes);
+        md.update(bytes);
+
+        byte[] digest = md.digest();
+        byte[] iv = new byte[16];
+        for(int i = 0; i < 16; i++){
+            iv[i] = digest[i*2];
+        }
+        return iv;
     }
 
     public String getEncodedSecretKey() {
