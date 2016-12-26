@@ -34,4 +34,5 @@
     <string name="rematch">Revanche</string>
     <string name="no_secure_line">Keine sichere Verbindung</string>
     <string name="close">ENDE</string>
+    <string name="fragment_connection_main_text">Erstelle eine Verbindung indem ihr eure Geräte mit NFC verbindet</string>
 </resources>

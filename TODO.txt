@@ -2,12 +2,12 @@
 
 Still on the table:
 
-* Implement synchronous encryption
-
 * Replace Toasts with Snackbars
+* Clean up Codebase
 
 DONE:
 
+* Implement synchronous encryption
 * Chess rematch dialog
 * Battleships rematch dialog
 * Change Bluetooth communication protocol -> Use JSON

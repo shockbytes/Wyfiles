@@ -8,6 +8,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.nfc.NfcAdapter;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.bluelinelabs.logansquare.LoganSquare;
@@ -50,7 +51,7 @@ public class WyfilesManager {
 
     public interface WyfilesCallback {
 
-        enum Severity {INFO, WARNING, ERROR}
+        enum Severity {WARNING, ERROR}
 
         void onBluetoothError(Throwable t);
 
@@ -74,6 +75,8 @@ public class WyfilesManager {
 
     private WyCipher cipher;
 
+    private boolean useCipher;
+
     private BluetoothConnection bluetoothConnection;
 
     private String bluetoothClientName;
@@ -82,13 +85,9 @@ public class WyfilesManager {
 
     private boolean isWifiHost;
 
-    private final int PORT = 52611;
-
     private Salut salutNetwork;
 
     private SalutDevice connectedSalutDevice;
-
-    private SalutDataReceiver dataReceiver;
 
     @Inject
     public WyfilesManager(BluetoothAdapter bluetoothAdapter, RxBluetooth rxBluetooth, UUID uuid,
@@ -100,13 +99,16 @@ public class WyfilesManager {
         this.nfcAdapter = nfcAdapter;
         this.wifiP2pManager = wifiP2pManager;
         this.cipher = cipher;
+
+        useCipher = false;
     }
 
     public void initializeCipherMode(String encodedIv, String encodedKey) throws Exception {
         cipher.initializeCiphers(encodedIv, encodedKey);
+        useCipher = true;
     }
 
-    public void setBluetoothClientName(String name) {
+    private void setBluetoothClientName(String name) {
         bluetoothClientName = name;
     }
 
@@ -143,16 +145,22 @@ public class WyfilesManager {
                                               @NonNull final WyfilesCallback callback) {
 
         this.isWifiHost = isWifiHost;
+        int PORT = 52611;
 
-        dataReceiver = new SalutDataReceiver(activity, new SalutDataCallback() {
+        SalutDataReceiver dataReceiver = new SalutDataReceiver(activity, new SalutDataCallback() {
             @Override
             public void onDataReceived(Object o) {
                 try {
 
                     WyfilesMessage message = LoganSquare.parse(String.valueOf(o), WyfilesMessage.class);
+
+                    if (useCipher) {
+                        message = cipher.decryptWyfilesMessage(message);
+                    }
+
                     handleFileStorage(message, callback);
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -214,9 +222,30 @@ public class WyfilesManager {
                 .subscribeOn(Schedulers.io());
     }
 
+    public String decryptIfNecessary(String encrypted) {
+
+        // Only decrypt message, if cipher is enabled, otherwise pass back plaintext
+        if (useCipher) {
+            try {
+                encrypted = cipher.decryptMessage(encrypted);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return encrypted;
+    }
+
     public void sendBluetoothMessage(String text) {
 
         if (bluetoothConnection != null) {
+
+            if (useCipher) { // If encryption is available, apply it before sending
+                try {
+                    text = cipher.encryptMessage(text);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             text += "\n"; // Always append line break at the end
             bluetoothConnection.send(text);
         }
@@ -226,7 +255,7 @@ public class WyfilesManager {
         sendBluetoothMessage(WyUtils.createGameRequestMessage(gameId));
     }
 
-    public void sendBluetoothExitRequest() {
+    private void sendBluetoothExitRequest() {
         sendBluetoothMessage(WyUtils.createExitMessage());
     }
 
@@ -316,13 +345,18 @@ public class WyfilesManager {
             byte[] payload = IOUtils.toByteArray(new FileInputStream(f));
             msg = new WyfilesMessage(filename, payload);
 
-        } catch (IOException e) {
+            if (useCipher) {
+                msg = cipher.encryptWyfilesMessage(msg);
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return msg;
     }
 
+    @Nullable
     private BluetoothDevice getBluetoothDeviceByName() {
 
         for (BluetoothDevice d : bluetoothAdapter.getBondedDevices()) {
@@ -361,7 +395,6 @@ public class WyfilesManager {
                 .subscribe(new Action1<BluetoothSocket>() {
                     @Override
                     public void call(BluetoothSocket bluetoothSocket) {
-
                         setupBluetoothConnection(bluetoothSocket, callback);
                     }
                 }, new Action1<Throwable>() {

@@ -13,7 +13,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import mc.fhooe.at.wyfiles.communication.WyfilesManager;
 import mc.fhooe.at.wyfiles.communication.WyfilesMessage;
 
 /**
@@ -39,7 +38,7 @@ public class WyCipher {
 
             SecureRandom rand = new SecureRandom();
             KeyGenerator generator = KeyGenerator.getInstance("AES");
-            generator.init(rand);
+            generator.init(256, rand);
             secretKey = generator.generateKey();
             initVector = generateInitializationVector();
 
@@ -102,6 +101,25 @@ public class WyCipher {
         return Base64.encodeToString(encryptedBytes, Base64.NO_WRAP);
     }
 
+    private byte[] encryptByteArray(byte[] payload) throws Exception {
+
+        if(payload == null){
+            return null;
+        }
+
+        return encryptionCipher.doFinal(payload);
+        //return Base64.encodeToString(encryptedBytes, Base64.NO_WRAP);
+    }
+
+    private byte[] decryptByteArray(byte[] encryptedPayload) throws Exception {
+
+        if (encryptedPayload == null) {
+            return null;
+        }
+
+        return decryptionCipher.doFinal(encryptedPayload);
+    }
+
     public String decryptMessage(String encrypted) throws Exception {
 
         if(encrypted == null || encrypted.isEmpty()){
@@ -112,14 +130,20 @@ public class WyCipher {
         return new String(decryptionCipher.doFinal(encodedBytes));
     }
 
-    public WyfilesMessage encryptWyfilesMessage(WyfilesMessage plainMsg) {
+    public WyfilesMessage encryptWyfilesMessage(WyfilesMessage plainMsg) throws Exception {
 
-        return null;
+        WyfilesMessage encMsg = new WyfilesMessage();
+        encMsg.filename = encryptMessage(plainMsg.filename);
+        encMsg.payload = encryptByteArray(plainMsg.payload);
+        return encMsg;
     }
 
-    public WyfilesManager decryptWyfilesMessage(WyfilesMessage encryptedMsg) {
+    public WyfilesMessage decryptWyfilesMessage(WyfilesMessage encryptedMsg) throws Exception {
 
-        return null;
+        WyfilesMessage decMsg = new WyfilesMessage();
+        decMsg.filename = decryptMessage(encryptedMsg.filename);
+        decMsg.payload = decryptByteArray(encryptedMsg.payload);
+        return decMsg;
     }
 
 }

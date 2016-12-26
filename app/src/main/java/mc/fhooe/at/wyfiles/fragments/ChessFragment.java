@@ -86,7 +86,7 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
 
             JSONObject object;
             try {
-                object = new JSONObject(s);
+                object = new JSONObject(wyfilesManager.decryptIfNecessary(s));
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;

@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
 
             JSONObject object;
             try {
-                object = new JSONObject(s);
+                object = new JSONObject(wyfilesManager.decryptIfNecessary(s));
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
@@ -112,11 +112,11 @@ public class MainActivity extends AppCompatActivity
             if (action.equals(WyUtils.ACTION_EXIT)) {
                 Snackbar.make(findViewById(android.R.id.content), R.string.connection_terminated,
                         Snackbar.LENGTH_INDEFINITE).setAction(R.string.close, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                supportFinishAfterTransition();
-                            }
-                        }).show();
+                    @Override
+                    public void onClick(View view) {
+                        supportFinishAfterTransition();
+                    }
+                }).show();
 
             } else if (action.equals(WyUtils.ACTION_GAME_INIT)) { // Indicates a new game connection request
                 int gameId = WyUtils.getGameIdFromMessage(object);
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState != null) {
             restoreFromInstanceState(savedInstanceState);
-        } else{
+        } else {
             primaryOld = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary);
             primaryDarkOld = ContextCompat.getColor(getApplicationContext(), R.color.colorPrimaryDark);
             initialTabPosition = 0;
@@ -147,15 +147,12 @@ public class MainActivity extends AppCompatActivity
 
         String payload = getIntent().getStringExtra(ARG_PAYLOAD);
         if (payload != null) {
-            getDataFromPayload(payload);
+            setupClientWithPayload(payload);
         }
-
         boolean isServer = getIntent().getBooleanExtra(ARG_IS_SERVER, false);
         if (isServer) {
-            wyfilesManager.startBluetoothServer(this);
-            wyfilesManager.establishWifiDirectConnection(this, true, null, this);
+            setupServer();
         }
-
         initializeTabs();
     }
 
@@ -197,7 +194,7 @@ public class MainActivity extends AppCompatActivity
     private void animateHeader(int tab) {
 
         int primary = 0;
-        int primaryDark= 0;
+        int primaryDark = 0;
         switch (tab) {
 
             case 0:
@@ -251,7 +248,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void getDataFromPayload(String payload) {
+    private void setupClientWithPayload(String payload) {
 
         try {
 
@@ -275,6 +272,17 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
             Snackbar.make(findViewById(R.id.main_content), R.string.no_secure_line,
                     Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void setupServer() {
+
+        wyfilesManager.startBluetoothServer(this);
+        wyfilesManager.establishWifiDirectConnection(this, true, null, this);
+        try {
+            wyfilesManager.initializeCipherMode(null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

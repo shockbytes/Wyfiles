@@ -154,7 +154,7 @@ public class ConnectionActivity extends AppCompatActivity
     public NdefMessage createNdefMessage(NfcEvent nfcEvent) {
 
         String text = WyUtils.createConnectionMessage(bluetoothAdapter.getName(),
-                wifiP2pDeviceName, "server", WyfilesManager.AuthLevel.NONE,
+                wifiP2pDeviceName, "server", WyfilesManager.AuthLevel.STANDARD,
                 cipher.getEncodedSecretKey(), cipher.getEncodedInitializationVector());
 
         return new NdefMessage(new NdefRecord[]{

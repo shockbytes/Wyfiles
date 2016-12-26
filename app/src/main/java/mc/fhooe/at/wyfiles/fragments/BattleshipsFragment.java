@@ -85,7 +85,7 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
 
             JSONObject object;
             try {
-                object = new JSONObject(s);
+                object = new JSONObject(wyfilesManager.decryptIfNecessary(s));
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
