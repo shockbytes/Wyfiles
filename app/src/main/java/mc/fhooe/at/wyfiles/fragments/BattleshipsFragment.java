@@ -4,6 +4,7 @@ package mc.fhooe.at.wyfiles.fragments;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -152,7 +153,7 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
                     break;
 
                 case WyUtils.ACTION_GAME_QUIT:
-                    Toast.makeText(getContext(), R.string.toast_battleship_exit, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.text_game_exit, Toast.LENGTH_LONG).show();
                     getActivity().supportFinishAfterTransition();
                     break;
             }
@@ -237,11 +238,11 @@ public class BattleshipsFragment extends Fragment implements BattleshipsAdapter.
     public void onItemClick(BattleshipField f, View v, int pos) {
 
         if (f.isAlreadySelected()) {
-            Toast.makeText(getContext(), R.string.toast_battleship_already_selected, Toast.LENGTH_LONG).show();
+            Snackbar.make(getView(), R.string.text_battleship_already_selected, Snackbar.LENGTH_SHORT).show();
             return;
         }
         if (!game.isTurnAllowed()) {
-            Toast.makeText(getContext(), R.string.toast_game_not_your_turn, Toast.LENGTH_LONG).show();
+            Snackbar.make(getView(), R.string.text_game_not_your_turn, Snackbar.LENGTH_SHORT).show();
             return;
         }
 

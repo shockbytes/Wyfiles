@@ -1,12 +1,13 @@
 
 
-Still on the table:
+### TODO
+
+* All done
+
+### DONE
 
 * Replace Toasts with Snackbars
 * Clean up Codebase
-
-DONE:
-
 * Implement synchronous encryption
 * Chess rematch dialog
 * Battleships rematch dialog

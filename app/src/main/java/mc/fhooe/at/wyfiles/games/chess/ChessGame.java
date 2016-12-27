@@ -10,14 +10,11 @@ import java.util.List;
 
 public class ChessGame {
 
-    private int boardSize;
-
     private ChessFigure.Color ownColor;
 
     private boolean isTurnAllowed;
 
     public ChessGame(boolean isHost) {
-        boardSize = 64;
 
         isTurnAllowed = isHost;
         ownColor = isHost ? ChessFigure.Color.WHITE : ChessFigure.Color.BLACK;

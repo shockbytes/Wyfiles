@@ -4,10 +4,14 @@ package mc.fhooe.at.wyfiles.fragments;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -96,7 +100,7 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
             switch (action) {
 
                 case WyUtils.ACTION_GAME_QUIT:
-                    Toast.makeText(getContext(), R.string.toast_chess_exit, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.text_game_exit, Toast.LENGTH_LONG).show();
                     getActivity().supportFinishAfterTransition();
                     break;
 
@@ -134,6 +138,7 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         ((WyApp) getActivity().getApplication()).getAppComponent().inject(this);
         isHost = getArguments().getBoolean(ARG_IS_HOST, false);
         isVibrationEnabled = true;
@@ -154,6 +159,21 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
         View v = inflater.inflate(R.layout.fragment_chess, container, false);
         ButterKnife.bind(this, v);
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_game, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.menu_game_vibration) {
+            isVibrationEnabled = item.isChecked();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -362,7 +382,7 @@ public class ChessFragment extends Fragment implements ChessAdapter.OnItemClickL
     public void onItemClick(ChessField f, View v, int pos) {
 
         if (!game.isTurnAllowed()) {
-            Toast.makeText(getContext(), R.string.toast_game_not_your_turn, Toast.LENGTH_SHORT).show();
+            Snackbar.make(getView(), R.string.text_game_not_your_turn, Snackbar.LENGTH_SHORT).show();
             return;
         }
 

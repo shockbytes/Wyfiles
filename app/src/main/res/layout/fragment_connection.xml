@@ -37,6 +37,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:visibility="gone"
         app:srcCompat="@drawable/ic_develop" />
 
     <TextView
@@ -47,6 +48,7 @@
         android:layout_centerHorizontal="true"
         android:fontFamily="sans-serif-light"
         android:text="@string/app_version"
+        android:visibility="gone"
         android:textColor="@android:color/white"
         android:textSize="13sp" />
 

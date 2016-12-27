@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Enemy ships: 10"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -45,7 +44,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="center"
-        android:text="Own ships: 10"
         android:textSize="20sp"
         android:textStyle="bold" />
 

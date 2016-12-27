@@ -61,10 +61,4 @@ public class ChessField {
         return figure.strike(x, y, destX, destY);
     }
 
-
-    public boolean strike(int pos) {
-        return false;
-    }
-
-
 }

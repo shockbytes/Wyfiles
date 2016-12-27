@@ -133,7 +133,7 @@ public class ConnectionActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQ_CODE_BT && resultCode != RESULT_OK) {
-            finishWithToastMessage("Sorry, please enable bluetooth!");
+            finishWithToastMessage(getString(R.string.text_enable_bluetooth));
         }
     }
 
@@ -191,7 +191,7 @@ public class ConnectionActivity extends AppCompatActivity
     private void setupBluetooth() {
 
         if (bluetoothAdapter == null) {
-            finishWithToastMessage("Sorry, Bluetooth not available");
+            finishWithToastMessage(getString(R.string.bluetooth_not_available));
         } else {
             int btState = bluetoothAdapter.getState();
             if (btState == BluetoothAdapter.STATE_OFF) {
@@ -209,8 +209,8 @@ public class ConnectionActivity extends AppCompatActivity
                 NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             if (rawMsgs != null) {
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    NdefMessage msg = (NdefMessage) rawMsgs[i];
+                for (Parcelable rawMsg : rawMsgs) {
+                    NdefMessage msg = (NdefMessage) rawMsg;
                     for (NdefRecord r : msg.getRecords()) {
                         String type = new String(r.getType());
                         if (type.equals(MIME_TYPE)) {

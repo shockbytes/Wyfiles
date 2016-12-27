@@ -22,7 +22,6 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -337,7 +336,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBluetoothError(Throwable t) {
 
-        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+        Snackbar.make(findViewById(android.R.id.content), R.string.bluetooth_error, Snackbar.LENGTH_LONG).show();
         Log.wtf("Wyfiles", t.getMessage());
     }
 
@@ -355,7 +354,7 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
             }
         });
     }
@@ -365,8 +364,9 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Snackbar.make(findViewById(android.R.id.content), filename + " successfully transferred!", Snackbar.LENGTH_LONG)
-                        .setAction("SHOW", new View.OnClickListener() {
+                String text = getString(R.string.wifi_file_transferred, filename);
+                Snackbar.make(findViewById(android.R.id.content), text, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.show, new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 if (onFileReceivedListener != null) {

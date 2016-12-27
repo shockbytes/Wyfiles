@@ -2,7 +2,6 @@ package mc.fhooe.at.wyfiles.util;
 
 import android.util.Base64;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -68,7 +67,7 @@ public class WyCipher {
         decryptionCipher.init(Cipher.DECRYPT_MODE, secretKey, ivParams);
     }
 
-    private byte[] generateInitializationVector() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    private byte[] generateInitializationVector() throws NoSuchAlgorithmException {
 
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] bytes = new byte[256];

@@ -10,9 +10,9 @@
     <string name="title_main">Remote %s</string>
     <string name="game_chess_description">Spiel ein wenig Low-Graphic Schach gegen deinen Partner</string>
     <string name="game_ships_description">Versenke gegnerische Schiffe und gewinne die Schlacht</string>
-    <string name="toast_battleship_already_selected">Feld wurde bereits geklickt, wähle ein anderes!</string>
-    <string name="toast_battleship_exit">Gegner hat das Spiel verlassen</string>
-    <string name="toast_game_not_your_turn">Warte bis dein Zug kommt!</string>
+    <string name="text_battleship_already_selected">Feld wurde bereits geklickt!</string>
+    <string name="text_game_exit">Dein Gegner hat das Spiel verlassen</string>
+    <string name="text_game_not_your_turn">Warte bis dein Zug kommt!</string>
     <string name="text_battleship_rematch">Du hast die Schlacht verloren! Willst du eine Revanche?</string>
     <string name="chess_cannot_move_figure">Figur kann nicht bewegt werden</string>
     <string name="chess_cannot_strike_figure">Figur kann nicht geschlagen werden</string>
@@ -22,7 +22,6 @@
     <string name="chess_your_turn">Es ist dein Zug</string>
     <string name="chess_enemy_strike">Oh nein!</string>
     <string name="file_metadata_folder" formatted="false">%d Dateien • %s</string>
-    <string name="toast_chess_exit">Dein Partner hat die Partie verlassen</string>
     <string name="text_chess_rematch">Du hast das Schachspiel verloren, willst du eine Revanche?</string>
     <string name="wifi_cannot_craft_message">Datei kann nicht gelesen werden</string>
     <string name="wifi_cannot_send_message">Nachricht kann nicht gesendet werden!</string>
@@ -35,4 +34,12 @@
     <string name="no_secure_line">Keine sichere Verbindung</string>
     <string name="close">ENDE</string>
     <string name="fragment_connection_main_text">Erstelle eine Verbindung indem ihr eure Geräte mit NFC verbindet</string>
+    <string name="menu_vibration">Vibration</string>
+    <string name="menu_bluetooth">Bluetooth</string>
+    <string name="menu_wifi">Wifi</string>
+    <string name="show">ZEIGE</string>
+    <string name="text_enable_bluetooth">Bitte Bluetooth einschalten</string>
+    <string name="wifi_file_transferred">%s übertragen!</string>
+    <string name="bluetooth_error">Bluetoothverbindung beschädigt</string>
+    <string name="bluetooth_not_available">Bluetooth ist nicht verfügbar</string>
 </resources>

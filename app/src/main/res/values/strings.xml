@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Wyfiles</string>
-    <string name="app_version" translatable="false">Version 0.9.9</string>
+    <string name="app_version" translatable="false">Version 1.0</string>
 
     <string name="tab_files">Files</string>
     <string name="tab_games">Games</string>
@@ -13,11 +13,10 @@
     <string name="game_chess">Chess</string>
     <string name="game_ships_enemy_ships">Enemy ships: %d</string>
     <string name="game_ships_own_ships">Own ships: %d</string>
-    <string name="toast_battleship_already_selected">Field already clicked, Select another one!</string>
-    <string name="toast_game_not_your_turn">It\'s not your turn!</string>
+    <string name="text_battleship_already_selected">Field already clicked</string>
+    <string name="text_game_not_your_turn">It\'s not your turn!</string>
     <string name="text_battleship_rematch">You have lost the fight! Want a rematch?</string>
-    <string name="toast_battleship_exit">Enemy left the game</string>
-    <string name="toast_chess_exit">Partner quit chess game</string>
+    <string name="text_game_exit">Your partner left the game</string>
     <string name="chess_cannot_strike_figure">Cannot strike enemy figure</string>
     <string name="chess_good_strike">Good strike!</string>
     <string name="chess_checkmate">CHECKMATE!</string>
@@ -26,9 +25,9 @@
     <string name="chess_partner_turn">Partner turn!</string>
     <string name="chess_enemy_strike">Oh no!!!</string>
     <string name="wifi_no_support">Device does not support Wifi Direct!</string>
-    <string name="wifi_register_error">Failed to register…</string>
+    <string name="wifi_register_error">Cannot register to host</string>
     <string name="wifi_cannot_craft_message">Cannot read file</string>
-    <string name="wifi_cannot_send_message">A problem while sending occurred</string>
+    <string name="wifi_cannot_send_message">Cannot send message!</string>
 
     <string name="file_metadata_file" translatable="false">%d %s • %s</string>
     <string name="file_metadata_folder" formatted="false">%d files • %s</string>
@@ -40,5 +39,13 @@
     <string name="no_secure_line">Cannot initialize secure line</string>
     <string name="close">CLOSE</string>
     <string name="fragment_connection_main_text">Create a connection by pairing your devices with NFC</string>
+    <string name="menu_vibration">Vibration</string>
+    <string name="menu_wifi">Wifi</string>
+    <string name="menu_bluetooth">Bluetooth</string>
+    <string name="text_enable_bluetooth">Please enable bluetooth!</string>
+    <string name="bluetooth_not_available">Sorry, Bluetooth is not available</string>
+    <string name="bluetooth_error">Bluetooth connection damaged</string>
+    <string name="show">SHOW</string>
+    <string name="wifi_file_transferred">%s transferred!</string>
 
 </resources>
